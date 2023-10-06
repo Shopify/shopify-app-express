@@ -68,7 +68,9 @@ export class AuthStrategy<
   ): Promise<AdminContext<Config, Resources>> {
     const {api, logger, config} = this;
 
-    rejectBotRequest({api, logger, config}, request);
+    if (!config.skipBotCheck) {
+      rejectBotRequest({api, logger, config}, request);
+    }
     respondToOptionsRequest({api, logger, config}, request);
 
     const cors = ensureCORSHeadersFactory({api, logger, config}, request);

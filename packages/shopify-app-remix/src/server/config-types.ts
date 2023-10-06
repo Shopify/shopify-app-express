@@ -221,6 +221,8 @@ export interface AppConfig<Storage extends SessionStorage = SessionStorage>
   sessionStorage: Storage;
   useOnlineTokens: boolean;
   hooks: HooksConfig;
+  extraAllowedUserAgents?: string[];
+  skipBotCheck?: boolean;
 }
 
 interface AuthConfig {

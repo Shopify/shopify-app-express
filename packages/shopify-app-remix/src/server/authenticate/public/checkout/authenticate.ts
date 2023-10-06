@@ -16,9 +16,13 @@ export function authenticateCheckoutFactory(
     request,
     options = {},
   ): Promise<CheckoutContext> {
-    const {logger} = params;
+    const {config, logger} = params;
 
     const corsHeaders = options.corsHeaders ?? [];
+
+    if (!config.skipBotCheck) {
+      rejectBotRequest(params, request);
+    }
 
     rejectBotRequest(params, request);
     respondToOptionsRequest(params, request, corsHeaders);
