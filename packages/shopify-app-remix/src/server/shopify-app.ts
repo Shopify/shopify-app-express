@@ -31,6 +31,7 @@ import {authenticatePublicFactory} from './authenticate/public';
 import {unauthenticatedStorefrontContextFactory} from './unauthenticated/storefront';
 import {AuthCodeFlowStrategy} from './authenticate/admin/strategies/auth-code-flow';
 import {TokenExchangeStrategy} from './authenticate/admin/strategies/token-exchange';
+import {IdempotentPromiseHandler} from './authenticate/helpers/idempotent-promise-handler';
 
 /**
  * Creates an object your app will use to interact with Shopify.
@@ -173,6 +174,7 @@ function deriveConfig<Storage extends SessionStorage>(
   return {
     ...appConfig,
     ...apiConfig,
+    idempotentPromiseHandler: new IdempotentPromiseHandler(),
     canUseLoginForm: appConfig.distribution !== AppDistribution.ShopifyAdmin,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
     hooks: appConfig.hooks ?? {},

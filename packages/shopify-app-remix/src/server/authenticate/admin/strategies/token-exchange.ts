@@ -4,20 +4,17 @@ import {
   RequestedTokenType,
   Session,
   Shopify,
-  ShopifyRestResources,
 } from '@shopify/shopify-api';
 import {AppConfig, AppConfigArg} from 'src/server/config-types';
 import {BasicParams, ApiConfigWithFutureFlags} from 'src/server/types';
 
-import {triggerAfterAuthHook} from '../helpers';
 import {respondToInvalidSessionToken} from '../../helpers';
+import {triggerAfterAuthHook} from '../helpers';
 
 import {AuthorizationStrategy, SessionContext} from './types';
 
-export class TokenExchangeStrategy<
-  Config extends AppConfigArg,
-  Resources extends ShopifyRestResources = ShopifyRestResources,
-> implements AuthorizationStrategy
+export class TokenExchangeStrategy<Config extends AppConfigArg>
+  implements AuthorizationStrategy
 {
   protected api: Shopify<ApiConfigWithFutureFlags<Config['future']>>;
   protected config: AppConfig;
@@ -68,10 +65,11 @@ export class TokenExchangeStrategy<
       }
 
       try {
-        await triggerAfterAuthHook<Resources>(
+        await this.handleAfterAuthHook(
           {api, config, logger},
           newSession,
           request,
+          sessionToken,
         );
       } catch (error) {
         throw new Response(undefined, {
@@ -120,5 +118,22 @@ export class TokenExchangeStrategy<
         statusText: 'Internal Server Error',
       });
     }
+  }
+
+  private async handleAfterAuthHook(
+    params: BasicParams,
+    session: Session,
+    request: Request,
+    sessionToken: string,
+  ) {
+    const {config} = params;
+    await config.idempotentPromiseHandler.handlePromise(
+      () => {
+        return triggerAfterAuthHook(params, session, request);
+      },
+      {
+        promiseIdentifier: sessionToken,
+      },
+    );
   }
 }

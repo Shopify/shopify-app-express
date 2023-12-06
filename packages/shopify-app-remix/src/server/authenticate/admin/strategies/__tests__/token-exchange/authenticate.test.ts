@@ -243,6 +243,39 @@ describe('authenticate', () => {
     expect(session).toBeDefined();
     expect(afterAuthMock).toHaveBeenCalledTimes(1);
   });
+
+  test('Runs the afterAuth hooks once given multiple authenticate calls with the same id token', async () => {
+    // GIVEN
+    const afterAuthMock = jest.fn();
+    const config = testConfig({
+      hooks: {
+        afterAuth: afterAuthMock,
+      },
+    });
+    const shopify = shopifyApp(config);
+
+    const {token} = getJwt();
+    await mockTokenExchangeRequest(token, 'offline');
+    await mockTokenExchangeRequest(token, 'offline');
+
+    // WHEN
+    const {session} = await shopify.authenticate.admin(
+      new Request(
+        `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`,
+      ),
+    );
+
+    config.sessionStorage.deleteSession(session.id);
+
+    await shopify.authenticate.admin(
+      new Request(
+        `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`,
+      ),
+    );
+
+    // THEN
+    expect(afterAuthMock).toHaveBeenCalledTimes(1);
+  });
 });
 
 async function mockTokenExchangeRequest(

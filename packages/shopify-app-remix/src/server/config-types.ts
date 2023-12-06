@@ -11,6 +11,7 @@ import {SessionStorage} from '@shopify/shopify-app-session-storage';
 import type {FutureFlagOptions, FutureFlags} from './future/flags';
 import type {AppDistribution} from './types';
 import type {AdminApiContext} from './clients';
+import {IdempotentPromiseHandler} from './authenticate/helpers/idempotent-promise-handler';
 
 export interface AppConfigArg<
   Resources extends ShopifyRestResources = ShopifyRestResources,
@@ -233,6 +234,7 @@ export interface AppConfig<Storage extends SessionStorage = SessionStorage>
   useOnlineTokens: boolean;
   hooks: HooksConfig;
   future: FutureFlags;
+  idempotentPromiseHandler: IdempotentPromiseHandler;
 }
 
 export interface AuthConfig {
