@@ -8,8 +8,14 @@ export function loginFactory(params: BasicParams) {
   return async function login(request: Request): Promise<LoginError | never> {
     const url = new URL(request.url);
     const shopParam = url.searchParams.get('shop');
+    const contentLength = parseInt(
+      request.headers.get('Content-Length') ?? '0',
+      10,
+    );
 
-    if (request.method === 'GET' && !shopParam) {
+    // A HEAD request will be passed as a GET request, to avoid calling `request.formData()` on an empty body in a HEAD request
+    // we check if the `Content-Length` header is truthy so it's safe to call `request.formData()`
+    if (request.method === 'GET' && !shopParam && !contentLength) {
       return {};
     }
 

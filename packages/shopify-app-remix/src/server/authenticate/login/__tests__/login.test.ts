@@ -11,9 +11,12 @@ describe('login helper', () => {
   it('returns an empty errors object if GET and no shop param', async () => {
     // GIVEN
     const shopify = shopifyApp(testConfig());
+    const headers = new Headers();
+    headers.set('Content-Length', '0');
     const requestMock = {
       url: `${APP_URL}/auth/login`,
       method: 'GET',
+      headers,
     };
 
     // WHEN
@@ -27,10 +30,13 @@ describe('login helper', () => {
     // GIVEN
     const formDataMock = jest.fn();
     const shopify = shopifyApp(testConfig());
+    const headers = new Headers();
+    headers.set('Content-Length', '0');
     const requestMock = {
       url: `${APP_URL}/auth/login?shop=${TEST_SHOP}`,
       method: 'GET',
       formData: formDataMock,
+      headers,
     };
 
     // WHEN
@@ -40,13 +46,37 @@ describe('login helper', () => {
     expect(formDataMock).not.toHaveBeenCalled();
   });
 
+  it('does not access formData if method is GET with an empty body and no shop parameter (HEAD)', async () => {
+    // GIVEN
+    const formDataMock = jest.fn();
+    const shopify = shopifyApp(testConfig());
+    const headers = new Headers();
+    headers.set('Content-Length', '0');
+    const requestMock = {
+      url: `${APP_URL}/auth/login`,
+      // HEAD requests will be passed as GET requests to the loader function which calls the login function
+      method: 'GET',
+      formData: formDataMock,
+      headers,
+    };
+
+    // WHEN
+    const errors = await shopify.login(requestMock as any as Request);
+
+    // THEN
+    expect(errors).toEqual({});
+  });
+
   it('returns an error if the shop parameter is missing', async () => {
     // GIVEN
     const shopify = shopifyApp(testConfig());
+    const headers = new Headers();
+    headers.set('Content-Length', '0');
     const requestMock = {
       url: `${APP_URL}/auth/login`,
       formData: async () => ({get: () => null}),
       method: 'POST',
+      headers,
     };
 
     // WHEN
@@ -64,12 +94,15 @@ describe('login helper', () => {
     async ({urlShop, formShop, method}) => {
       // GIVEN
       const shopify = shopifyApp(testConfig());
+      const headers = new Headers();
+      headers.set('Content-Length', '0');
       const requestMock = {
         url: urlShop
           ? `${APP_URL}/auth/login?shop=${urlShop}`
           : `${APP_URL}/auth/login`,
         formData: async () => ({get: () => formShop}),
         method,
+        headers,
       };
 
       // WHEN
@@ -102,12 +135,16 @@ describe('login helper', () => {
           isEmbeddedApp: testCaseConfig.isEmbeddedApp,
         });
         const shopify = shopifyApp(config);
+        const headers = new Headers();
+        headers.set('Content-Length', method === 'POST' ? '123' : '0');
         const requestMock = {
           url: urlShop
             ? `${APP_URL}/auth/login?shop=${urlShop}`
             : `${APP_URL}/auth/login`,
-          formData: async () => ({get: () => formShop}),
+          formData:
+            method === 'POST' ? async () => ({get: () => formShop}) : undefined,
           method,
+          headers,
         };
 
         // WHEN
@@ -133,10 +170,13 @@ describe('login helper', () => {
         isEmbeddedApp: testCaseConfig.isEmbeddedApp,
       });
       const shopify = shopifyApp(config);
+      const headers = new Headers();
+      headers.set('Content-Length', '123');
       const requestMock = {
         url: `${APP_URL}/auth/login`,
         formData: async () => ({get: () => `https://${TEST_SHOP}/`}),
         method: 'POST',
+        headers,
       };
 
       // WHEN
