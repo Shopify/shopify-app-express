@@ -132,6 +132,7 @@ export class TokenExchangeStrategy<Config extends AppConfigArg>
         requestedTokenType,
       });
     } catch (error) {
+      logger.error('token exchange error', error)
       if (
         error instanceof InvalidJwtError ||
         (error instanceof HttpResponseError &&
