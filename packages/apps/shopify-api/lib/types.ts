@@ -31,6 +31,7 @@ export enum ShopifyHeader {
   Topic = 'X-Shopify-Topic',
   SubTopic = 'X-Shopify-Sub-Topic',
   WebhookId = 'X-Shopify-Webhook-Id',
+  TriggeredAt ="X-Shopify-Triggered-At",
   StorefrontPrivateToken = 'Shopify-Storefront-Private-Token',
   StorefrontSDKVariant = 'X-SDK-Variant',
   StorefrontSDKVersion = 'X-SDK-Version',
