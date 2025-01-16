@@ -19,7 +19,7 @@ export function ensureInstalled({
 }: EnsureInstalledParams): EnsureInstalledMiddleware {
   return function ensureInstalledOnShop() {
     return async (req: Request, res: Response, next: NextFunction) => {
-      config.logger.info('Running ensureInstalledOnShop');
+      config.logger.debug('Running ensureInstalledOnShop');
 
       if (!api.config.isEmbeddedApp) {
         config.logger.warning(
@@ -65,7 +65,7 @@ export function ensureInstalled({
 
       addCSPHeader(api, req, res);
 
-      config.logger.info('App is installed and ready to load', {shop});
+      config.logger.debug('App is installed and ready to load', {shop});
 
       return next();
     };
