@@ -25,8 +25,10 @@ describe('shopify.webhooks.validate', () => {
       webhookId: '123456789',
       apiVersion: '2023-01',
       domain: 'shop1.myshopify.io',
+      eventId: '123456789',
       hmac: 'B23tXN681gZ0qIWNRrgtzBE9XSDo5yaUu6wfmhu3a7g=',
       topic: 'PRODUCTS_CREATE',
+      triggeredAt: '2023-01-01T00:00:00Z',
     });
   });
 
