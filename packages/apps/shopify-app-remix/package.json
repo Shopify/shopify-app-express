@@ -78,14 +78,14 @@
   ],
   "devDependencies": {
     "@remix-run/node": "^2.15.2",
-    "@remix-run/react": "^2.11.2",
-    "@remix-run/testing": "^2.11.2",
+    "@remix-run/react": "^2.15.2",
+    "@remix-run/testing": "^2.15.2",
     "@shopify/generate-docs": "^0.16.4",
     "@shopify/polaris": "^12.18.0",
-    "@shopify/react-testing": "^5.4.0",
+    "@shopify/react-testing": "^6.0.0",
     "@shopify/shopify-app-session-storage-memory": "^4.0.10",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/react": "^19.0.4",
+    "@types/react": "^19.0.7",
     "@types/semver": "^7.5.8",
     "jest-fetch-mock": "^3.0.3",
     "jsonwebtoken": "^9.0.2"
@@ -96,7 +96,7 @@
     "@shopify/shopify-api": "^11.7.0",
     "@shopify/shopify-app-session-storage": "^3.0.10",
     "@shopify/storefront-api-client": "^1.0.3",
-    "isbot": "^5.1.20",
+    "isbot": "^5.1.21",
     "semver": "^7.6.2"
   },
   "peerDependencies": {

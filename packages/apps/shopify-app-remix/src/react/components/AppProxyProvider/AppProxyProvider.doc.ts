@@ -25,13 +25,13 @@ const data: ReferenceEntityTemplateSchema = {
     {
       name: 'AppProxyForm',
       subtitle: 'Render form elements in proxies.',
-      url: '/docs/api/shopify-app-remix/app-proxy-components/appproxy-form',
+      url: '/docs/api/shopify-app-remix/app-proxy-components/appproxyform',
       type: 'remix',
     },
     {
       name: 'AppProxyLink',
       subtitle: 'Render link elements in proxies.',
-      url: '/docs/api/shopify-app-remix/app-proxy-components/appproxy-link',
+      url: '/docs/api/shopify-app-remix/app-proxy-components/appproxylink',
       type: 'remix',
     },
   ],

@@ -44,7 +44,8 @@ export interface UnauthenticatedAdminContext<
    * import { unauthenticated } from "../shopify.server";
    *
    * export async function action({ request }: ActionFunctionArgs) {
-   *  const { admin } = await unauthenticated.admin(request);
+   *  const shop = getShopFromExternalRequest(request);
+   *  const { admin } = await unauthenticated.admin(shop);
    *
    *  const response = await admin.graphql(
    *    `#graphql

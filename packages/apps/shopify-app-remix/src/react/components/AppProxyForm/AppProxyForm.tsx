@@ -8,15 +8,19 @@ export interface AppProxyFormProps extends FormProps {
 }
 
 /**
- * Sets up a Remix `<Form>` component that works when rendered behind an app proxy.
+ * Sets up a Remix `<Form>` component that works when rendered on an app proxy page.
  *
  * Supports any properties accepted by the `<Form>` component.
+ *
+ * Because Remix doesn't support URL rewriting, any route using this component should <b>match the pathname of the proxy
+ * URL exactly</b>, and <b>end in a trailing slash</b> (e.g., `https://<shop>/apps/proxy/`), or set the Remix Form prop
+ * `navigate` to `false`.
  *
  * @example
  * <caption>Render a form element in a proxied route.</caption>
  * <description>Use an `AppProxyForm` within an `AppProxy` to create a form.</description>
  * ```ts
- * // /app/routes/**\/*.ts
+ * // /app/routes/apps/appProxy.ts
  * import {
  *   AppProxyProvider,
  *   AppProxyForm,
@@ -46,12 +50,11 @@ export interface AppProxyFormProps extends FormProps {
  *
  * export default function App() {
  *   const { appUrl } = useLoaderData();
- *   const data = useActionData();
  *
  *   return (
  *     <AppProxyProvider appUrl={appUrl}>
- *       <AppProxyForm action="/">
- *         <input type="text" name="field" defaultValue={data?.field} />
+ *       <AppProxyForm action="/apps/appProxy" method="post">
+ *         <input type="text" name="field" />
  *
  *         <input type="submit" name="Submit" />
  *       </AppProxyForm>

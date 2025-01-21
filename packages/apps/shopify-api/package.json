@@ -83,16 +83,16 @@
     "@shopify/network": "^3.3.0",
     "@shopify/storefront-api-client": "^1.0.3",
     "compare-versions": "^6.1.1",
-    "isbot": "^5.1.20",
+    "isbot": "^5.1.21",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.6.1",
     "tslib": "^2.8.1",
-    "uuid": "^11.0.4"
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241230.0",
-    "@swc/core": "^1.10.6",
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@swc/core": "^1.10.8",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node-fetch": "^2.6.11",
@@ -100,10 +100,10 @@
     "expect": "^29.7.0",
     "express": "^4.21.2",
     "jest-environment-miniflare": "^2.14.4",
-    "miniflare": "^3.20241230.0",
-    "rollup": "^4.30.1",
+    "miniflare": "^3.20241230.2",
+    "rollup": "^4.31.0",
     "rollup-plugin-swc": "^0.2.1",
-    "wrangler": "^3.100.0"
+    "wrangler": "^3.103.2"
   },
   "files": [
     "dist/*",

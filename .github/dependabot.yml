@@ -1,11 +1,28 @@
 version: 2
 updates:
   # Enable version updates for npm
-  - package-ecosystem: "npm"
+  - package-ecosystem: 'npm'
     # Look for `package.json` and `lock` files in the `root` directory
-    directory: "/"
+    directory: '/'
     # Check the npm registry for updates every day (weekdays)
     schedule:
-      interval: "daily"
+      interval: 'daily'
     # Dependabot defaults to 5 open pull requests at a time
     open-pull-requests-limit: 100
+
+    # Group together PRs of interdependant packages
+    groups:
+      aws-sdk:
+        patterns:
+          - '@aws-sdk/client-dynamodb'
+          - '@aws-sdk/util-dynamodb'
+      remix-run:
+        patterns:
+          - '@remix-run/node'
+          - '@remix-run/react'
+          - '@remix-run/testing'
+          - '@remix-run/server-runtime'
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/client'

@@ -169,6 +169,84 @@ export default {
 };
 ```
 
+#### Example `.graphqlrc.ts` file with to generate types for UI extensions
+You can specify multiple APIs in your `.graphqlrc.ts` file by adding multiple projects.
+
+```js
+import { LATEST_API_VERSION } from "@shopify/shopify-api";
+import { shopifyApiProject, ApiType } from "@shopify/api-codegen-preset";
+import type { IGraphQLConfig } from "graphql-config";
+
+function getConfig() {
+  const config: IGraphQLConfig = {
+    projects: {
+      default: shopifyApiProject({
+        apiType: ApiType.Storefront,
+        apiVersion: LATEST_API_VERSION,
+        documents: ["./extensions/**/*.{js,ts,jsx,tsx}", "./extensions/.server/**/*.{js,ts,jsx,tsx}"],
+        outputDir: "./extensions/types",
+      }),
+      UIExtensions: shopifyApiProject({
+        apiType: ApiType.Admin,
+        apiVersion: LATEST_API_VERSION,
+        documents: ["./app/**/*.{js,ts,jsx,tsx}", "./app/.server/**/*.{js,ts,jsx,tsx}" ],
+        outputDir: "./app/types",
+      }),
+    },
+  };
+
+const config = getConfig();
+export default config;
+```
+
+
+### Example `graphqlrc.ts` file for autocompletion for Shopify Function Extensions
+```ts
+import fs from "fs";
+import { LATEST_API_VERSION } from "@shopify/shopify-api";
+import { shopifyApiProject, ApiType } from "@shopify/api-codegen-preset";
+import type { IGraphQLConfig } from "graphql-config";
+
+function getConfig() {
+  const config: IGraphQLConfig = {
+    projects: {
+      default: shopifyApiProject({
+        apiType: ApiType.Storefront,
+        apiVersion: LATEST_API_VERSION,
+        documents: ["./extensions/**/*.{js,ts,jsx,tsx}", "./extensions/.server/**/*.{js,ts,jsx,tsx}"],
+        outputDir: "./extensions/types",
+      }),
+  };
+
+  let extensions: string[] = [];
+  try {
+    extensions = fs.readdirSync("./extensions");
+    console.log(extensions, "extensions");
+  } catch {
+    // ignore if no extensions
+  }
+
+  for (const entry of extensions) {
+    console.log(entry, "entry");
+    const extensionPath = `./extensions/${entry}`;
+    const schema = `${extensionPath}/schema.graphql`;
+    if (!fs.existsSync(schema)) {
+      continue;
+    }
+    config.projects[entry] = {
+      schema,
+      documents: [`${extensionPath}/**/*.graphql`],
+    };
+  }
+
+
+  return config;
+}
+
+const config = getConfig();
+export default config;
+```
+
 ## Generating types
 
 Once you configure your app, you can run `graphql-codegen` to start parsing your queries for types.
@@ -196,6 +274,21 @@ npm run graphql-codegen
 
 ```sh
 pnpm graphql-codegen
+```
+
+### Generating types for more than one API
+If you have specified more than one API in your `.graphqlrc.ts` file, you can run the script for each API by passing the `--project` [flag](https://the-guild.dev/graphql/codegen/docs/config-reference/multiproject-config#command-to-generate-files).
+
+```sh
+npm run graphql-codegen --project=UIExtensions
+```
+
+```sh
+yarn graphql-codegen --project=UIExtensions
+```
+
+```sh
+pnpm graphql-codegen --project=UIExtensions
 ```
 
 > [!NOTE]
