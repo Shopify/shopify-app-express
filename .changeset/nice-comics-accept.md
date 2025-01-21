@@ -6,7 +6,6 @@ Update missing Shopify header in webhook
 
 https://shopify.dev/docs/apps/build/webhooks#key-terminology
 ```ts
-// Abort the request after 3 seconds
 
 enum ShopifyHeader {
   ...,
