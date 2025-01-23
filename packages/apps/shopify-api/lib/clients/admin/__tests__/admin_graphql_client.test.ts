@@ -127,6 +127,33 @@ describe('GraphQL client', () => {
     }).toMatchMadeHttpRequest();
   });
 
+  it('adapts to private app requests only if isCustomStoreApp', async () => {
+    const shopify = shopifyApi(
+      testConfig({
+        isCustomStoreApp: false,
+        adminApiAccessToken: 'dangit-another-access-token',
+      }),
+    );
+
+    const client = new shopify.clients.Graphql({session});
+    queueMockResponse(JSON.stringify(successResponse));
+
+    await expect(client.request(QUERY)).resolves.toEqual(
+      expect.objectContaining(successResponse),
+    );
+
+    const customHeaders: Record<string, string> = {};
+    customHeaders[ShopifyHeader.AccessToken] = accessToken;
+
+    expect({
+      method: 'POST',
+      domain,
+      path: `/admin/api/${shopify.config.apiVersion}/graphql.json`,
+      data: {query: QUERY},
+      headers: customHeaders,
+    }).toMatchMadeHttpRequest();
+  });
+
   it('fails to instantiate without access token', () => {
     const shopify = shopifyApi(testConfig());
 
