@@ -11,7 +11,7 @@ import {
   Money,
 } from './types';
 import {assessPayments} from './check';
-
+import {convertAppRecurringPricingMoney, convertAppUsagePricingMoney} from './utils';
 interface InternalParams {
   client: GraphqlClient;
   isTest?: boolean;
@@ -108,7 +108,12 @@ export function createUsageRecord(
           errorData: response.data?.appUsageRecordCreate?.userErrors,
         });
       }
-      return response.data?.appUsageRecordCreate?.appUsageRecord!;
+
+      const appUsageRecord = response.data?.appUsageRecordCreate?.appUsageRecord!;
+      convertAppRecurringPricingMoney(appUsageRecord.price);
+      convertAppUsagePricingMoney(appUsageRecord.subscriptionLineItem.plan.pricingDetails);
+
+      return appUsageRecord;
     } catch (error) {
       if (error instanceof GraphqlQueryError) {
         throw new BillingError({

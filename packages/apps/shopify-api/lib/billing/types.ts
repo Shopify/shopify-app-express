@@ -556,6 +556,21 @@ export interface UsageRecord {
    * The idempotency key for this request.
    */
   idempotencyKey?: string;
+  /**
+   * The subscription line item associated with the usage record.
+   */
+  subscriptionLineItem: AppSubscriptionLineItem;
+}
+
+export interface AppSubscriptionLineItem {
+  /**
+   * The ID of the subscription line item.
+   */
+  id: string;
+  /**
+   * The plan associated with the subscription line item.
+   */
+  plan: AppPlan;
 }
 
 export interface BillingUpdateUsageCappedAmountParams {

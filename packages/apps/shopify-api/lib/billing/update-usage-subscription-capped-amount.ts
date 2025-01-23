@@ -8,6 +8,7 @@ import {
   BillingUpdateUsageCappedAmountResponse,
   UpdateCappedAmountConfirmation,
 } from './types';
+import {convertLineItems} from './utils';
 
 const UPDATE_USAGE_CAPPED_AMOUNT_MUTATION = `
 mutation appSubscriptionLineItemUpdate($cappedAmount: MoneyInput!, $id: ID!) {
@@ -88,11 +89,16 @@ export function updateUsageCappedAmount(
         });
       }
 
+      const appSubscription =
+        response.data?.appSubscriptionLineItemUpdate?.appSubscription!;
+      if (appSubscription && appSubscription.lineItems) {
+        appSubscription.lineItems = convertLineItems(appSubscription.lineItems);
+      }
+
       return {
         confirmationUrl:
           response.data?.appSubscriptionLineItemUpdate?.confirmationUrl!,
-        appSubscription:
-          response.data?.appSubscriptionLineItemUpdate?.appSubscription!,
+        appSubscription,
       };
     } catch (error) {
       if (error instanceof GraphqlQueryError) {

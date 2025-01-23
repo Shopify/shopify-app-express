@@ -353,7 +353,7 @@ export const APP_USAGE_RECORD = {
       pricingDetails: {
         balanceUsed: USAGE_RECORD_PRICE,
         cappedAmount: {
-          amount: '5.00',
+          amount: 5,
           currencyCode: 'USD',
         },
         terms: '1 dollar per usage',

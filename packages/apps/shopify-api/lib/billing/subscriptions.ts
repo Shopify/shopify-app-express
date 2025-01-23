@@ -8,6 +8,7 @@ import {
   BillingSubscriptions,
   SubscriptionResponse,
 } from './types';
+import {convertLineItems} from './utils';
 
 const SUBSCRIPTION_QUERY = `
 query appSubscription {
@@ -81,6 +82,20 @@ export function subscriptions(config: ConfigInterface): BillingSubscriptions {
     const response =
       await client.request<SubscriptionResponse>(SUBSCRIPTION_QUERY);
 
-    return response.data?.currentAppInstallation!;
+    if (!response.data?.currentAppInstallation?.activeSubscriptions) {
+      return {activeSubscriptions: []};
+    }
+
+    const activeSubscriptions =
+      response.data.currentAppInstallation.activeSubscriptions;
+    activeSubscriptions.forEach((subscription) => {
+      if (subscription.lineItems) {
+        subscription.lineItems = convertLineItems(subscription.lineItems);
+      }
+    });
+
+    return {
+      activeSubscriptions,
+    };
   };
 }

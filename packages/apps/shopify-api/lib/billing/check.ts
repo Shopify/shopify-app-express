@@ -13,6 +13,7 @@ import {
   CurrentAppInstallations,
   OneTimePurchase,
 } from './types';
+import {convertLineItems} from './utils';
 
 interface SubscriptionMeetsCriteriaParams {
   subscription: AppSubscription;
@@ -87,6 +88,9 @@ export async function assessPayments({
     installation.activeSubscriptions.forEach((subscription) => {
       if (subscriptionMeetsCriteria({subscription, isTest, plans})) {
         returnValue.hasActivePayment = true;
+        if (subscription.lineItems) {
+          subscription.lineItems = convertLineItems(subscription.lineItems);
+        }
         returnValue.appSubscriptions.push(subscription);
       }
     });

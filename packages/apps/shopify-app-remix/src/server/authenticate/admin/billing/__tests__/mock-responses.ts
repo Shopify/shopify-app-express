@@ -164,7 +164,7 @@ export const USAGE_RECORD = {
     plan: {
       pricingDetails: {
         balanceUsed: {amount: 1, currencyCode: 'USD'},
-        cappedAmount: {amount: '5.00', currencyCode: 'USD'},
+        cappedAmount: {amount: 5, currencyCode: 'USD'},
         terms: '1 dollar per usage',
       },
     },
