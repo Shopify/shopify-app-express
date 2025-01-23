@@ -72,6 +72,22 @@ const tests: Record<string | number, Test> = {
       }),
     }),
   },
+  301: {
+    expectedRequest: initTestRequest({method: 'post'}),
+    testResponse: initTestResponse({
+      statusCode: 301,
+      headers: {
+        location: '/url/path/301resolved',
+      },
+    }),
+  },
+  '301resolved': {
+    expectedRequest: initTestRequest({method: 'post'}),
+    testResponse: initTestResponse({
+      body: 'followed redirect',
+      statusCode: 204,
+    }),
+  },
   400: {
     expectedRequest: initTestRequest(),
     testResponse: initTestResponse({
@@ -96,6 +112,13 @@ const tests: Record<string | number, Test> = {
       statusCode: 404,
       statusText: errorStatusText,
       body: JSON.stringify({}),
+    }),
+  },
+  405: {
+    expectedRequest: initTestRequest(),
+    testResponse: initTestResponse({
+      statusCode: 405,
+      statusText: 'Wrong method',
     }),
   },
   417: {
@@ -161,6 +184,12 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   const test = tests[code] || tests['200'];
   const expectedRequest = test.expectedRequest;
   let testResponse = test.testResponse;
+
+  if (code.startsWith('301')) {
+    if (expectedRequest?.method !== req.method?.toLowerCase()) {
+      testResponse = tests['405'].testResponse;
+    }
+  }
 
   if (matchHeaders(receivedHeaders as Headers, expectedRequest.headers)) {
     if (code === 'retries' && retryCount < 2) {
