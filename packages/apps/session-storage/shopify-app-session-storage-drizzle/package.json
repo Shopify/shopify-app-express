@@ -54,7 +54,7 @@
     "@libsql/client": "^0.14.0",
     "@shopify/shopify-app-session-storage-test-utils": "^3.0.11",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/pg": "^8.11.6",
+    "@types/pg": "^8.11.11",
     "better-sqlite3": "^11.8.1",
     "drizzle-kit": "^0.30.2",
     "drizzle-orm": "^0.38.4",
