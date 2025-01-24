@@ -376,7 +376,7 @@ describe('Redirect helper', () => {
   }
 
   async function assertAppBridgeHeaders(response: Response, url: string) {
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(302);
     expect(response.headers.get(REAUTH_URL_HEADER)).toBe(url);
   }
 

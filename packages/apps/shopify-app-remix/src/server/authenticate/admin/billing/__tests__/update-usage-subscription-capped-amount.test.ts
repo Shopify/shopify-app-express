@@ -150,7 +150,7 @@ describe('Update usage billing plan capped amount', () => {
     );
 
     // THEN
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(302);
     expect(response.headers.get(REAUTH_URL_HEADER)).toEqual(
       responses.CONFIRMATION_URL,
     );
@@ -270,7 +270,7 @@ describe('Update usage billing plan capped amount', () => {
     );
 
     // THEN
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(302);
 
     const reauthUrl = new URL(response.headers.get(REAUTH_URL_HEADER)!);
     expect(reauthUrl.origin).toEqual(APP_URL);

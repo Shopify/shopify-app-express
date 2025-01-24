@@ -1,9 +1,9 @@
+import {redirect} from '@remix-run/server-runtime';
+
 import {REAUTH_URL_HEADER} from '../../const';
 
 export function redirectWithAppBridgeHeaders(redirectUri: string): never {
-  throw new Response(undefined, {
-    status: 401,
-    statusText: 'Unauthorized',
+  throw redirect(redirectUri, {
     headers: getAppBridgeHeaders(redirectUri),
   });
 }
