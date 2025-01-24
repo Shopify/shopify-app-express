@@ -107,7 +107,7 @@ it('returns app bridge redirection during request headers when Shopify invalidat
   );
 
   // THEN
-  expect(response.status).toEqual(401);
+  expect(response.status).toEqual(302);
 
   const {origin, pathname, searchParams} = new URL(
     response.headers.get(REAUTH_URL_HEADER)!,

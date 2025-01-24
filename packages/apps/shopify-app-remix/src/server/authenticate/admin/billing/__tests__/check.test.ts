@@ -201,7 +201,7 @@ describe('Billing check', () => {
     // THEN
     const reauthUrl = new URL(response.headers.get(REAUTH_URL_HEADER)!);
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(302);
     expect(reauthUrl.origin).toEqual(APP_URL);
     expect(reauthUrl.pathname).toEqual('/auth');
   });

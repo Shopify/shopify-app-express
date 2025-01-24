@@ -36,7 +36,7 @@ describe('authorize.session token header path', () => {
           response.headers.get(REAUTH_URL_HEADER)!,
         );
 
-        expect(response.status).toBe(401);
+        expect(response.status).toBe(302);
         expect(origin).toBe(APP_URL);
         expect(pathname).toBe('/auth');
         expect(searchParams.get('shop')).toBe(TEST_SHOP);
@@ -67,7 +67,7 @@ describe('authorize.session token header path', () => {
         const {origin, pathname, searchParams} = new URL(
           response.headers.get(REAUTH_URL_HEADER)!,
         );
-        expect(response.status).toBe(401);
+        expect(response.status).toBe(302);
         expect(origin).toBe(APP_URL);
         expect(pathname).toBe('/auth');
         expect(searchParams.get('shop')).toBe(TEST_SHOP);

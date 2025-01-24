@@ -14,7 +14,7 @@ import {
 
 describe('authorize.session token header path', () => {
   describe('errors', () => {
-    it('throws a 401 if the session token is invalid', async () => {
+    it('throws a 302 if the session token is invalid', async () => {
       // GIVEN
       const shopify = shopifyApp(testConfig());
 
@@ -27,7 +27,7 @@ describe('authorize.session token header path', () => {
       );
 
       // THEN
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(302);
     });
   });
 

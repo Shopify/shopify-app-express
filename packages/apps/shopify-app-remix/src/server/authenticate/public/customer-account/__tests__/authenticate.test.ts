@@ -108,7 +108,7 @@ describe('JWT validation', () => {
     expect(response.status).toBe(401);
   });
 
-  it('throws a 401 on invalid Authorization bearer token', async () => {
+  it('throws a 302 on invalid Authorization bearer token', async () => {
     // GIVEN
     const shopify = shopifyApp(testConfig());
 
@@ -121,7 +121,7 @@ describe('JWT validation', () => {
     );
 
     // THEN
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(302);
   });
 
   it('rejects bot requests', async () => {

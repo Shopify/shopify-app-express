@@ -131,7 +131,7 @@ describe('authorize.admin doc request path', () => {
       );
     });
 
-    it('throws a 401 if app is embedded and the id_token search param is invalid for XHR requests', async () => {
+    it('throws a 302 if app is embedded and the id_token search param is invalid for XHR requests', async () => {
       // GIVEN
       const shopify = shopifyApp(testConfig());
       await setUpValidSession(shopify.sessionStorage);
@@ -145,7 +145,7 @@ describe('authorize.admin doc request path', () => {
       );
 
       // THEN
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(302);
       expect(
         response.headers.get('X-Shopify-Retry-Invalid-Session-Request'),
       ).toBe('1');

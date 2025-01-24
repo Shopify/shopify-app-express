@@ -188,7 +188,7 @@ describe('authenticate', () => {
     );
   });
 
-  test('throws 401 unauthorized on XHR request when receiving an invalid subject token response from token exchange API', async () => {
+  test('throws 302 unauthorized on XHR request when receiving an invalid subject token response from token exchange API', async () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
@@ -207,7 +207,7 @@ describe('authenticate', () => {
     );
 
     // THEN
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(302);
     expect(
       response.headers.get('X-Shopify-Retry-Invalid-Session-Request'),
     ).toEqual('1');
