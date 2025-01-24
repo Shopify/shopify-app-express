@@ -18,13 +18,7 @@ export function redirectOutOfApp(
   const isXhrRequest = request.headers.get('authorization');
 
   if (isXhrRequest) {
-    // eslint-disable-next-line no-warning-comments
-    // TODO Check this with the beta flag disabled (with the bounce page)
-    // Remix is not including the X-Shopify-API-Request-Failure-Reauthorize-Url when throwing a Response
-    // https://github.com/remix-run/remix/issues/5356
-    throw new Response(undefined, {
-      status: 401,
-      statusText: 'Unauthorized',
+    throw redirect(url, {
       headers: getAppBridgeHeaders(url),
     });
   } else if (isEmbeddedRequest) {
