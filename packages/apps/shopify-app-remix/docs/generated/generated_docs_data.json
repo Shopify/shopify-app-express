@@ -74,6 +74,40 @@
               }
             ],
             "value": "export interface AppProviderProps\n  extends Omit<PolarisAppProviderProps, 'linkComponent' | 'i18n'> {\n  /**\n   * The API key for your Shopify app. This is the `Client ID` from the Partner Dashboard.\n   *\n   * When using the Shopify CLI, this is the `SHOPIFY_API_KEY` environment variable. If you're using the environment\n   * variable, then you need to pass it from the loader to the component.\n   */\n  apiKey: string;\n  /**\n   * Whether the app is loaded inside the Shopify Admin. Default is `true`.\n   *\n   * {@link https://shopify.dev/docs/apps/admin/embedded-app-home}\n   */\n  isEmbeddedApp?: boolean;\n  /**\n   * The internationalization (i18n) configuration for your Polaris provider.\n   *\n   * {@link https://polaris.shopify.com/components/utilities/app-provider}\n   */\n  i18n?: PolarisAppProviderProps['i18n'];\n  /**\n   * Used internally by Shopify. You don't need to set this.\n   * @private\n   */\n  __APP_BRIDGE_URL?: string;\n}"
+          },
+          "FeaturesConfig": {
+            "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/utilities/features/types.d.ts",
+            "name": "FeaturesConfig",
+            "description": "",
+            "members": [
+              {
+                "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/utilities/features/types.d.ts",
+                "name": "[key: string]",
+                "value": "boolean | undefined"
+              },
+              {
+                "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/utilities/features/types.d.ts",
+                "syntaxKind": "PropertySignature",
+                "name": "dynamicTopBarAndReframe",
+                "value": "boolean",
+                "description": "",
+                "isOptional": true
+              }
+            ],
+            "value": "export interface FeaturesConfig {\n    dynamicTopBarAndReframe?: boolean;\n    [key: string]: boolean | undefined;\n}"
+          },
+          "TranslationDictionary": {
+            "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/utilities/i18n/I18n.d.ts",
+            "name": "TranslationDictionary",
+            "description": "",
+            "members": [
+              {
+                "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/utilities/i18n/I18n.d.ts",
+                "name": "[key: string]",
+                "value": "string | TranslationDictionary"
+              }
+            ],
+            "value": "interface TranslationDictionary {\n    [key: string]: string | TranslationDictionary;\n}"
           }
         }
       }
@@ -1089,7 +1123,8 @@
     },
     "jsDocTypeExamples": [
       "EmbeddedAdminContext",
-      "AdminApiContext",
+      "AdminApiContextWithRest",
+      "AdminApiContextWithoutRest",
       "BillingContext",
       "ScopesApiContext"
     ],
@@ -1214,6 +1249,147 @@
                   {
                     "title": "shopify.server.ts",
                     "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\n\nconst shopify = shopifyApp({\n  // ...etc\n  useOnlineTokens: true,\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "graphql",
+          "examples": [
+            {
+              "description": "Use `admin.graphql` to make query / mutation requests.",
+              "codeblock": {
+                "title": "Querying the GraphQL API",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { ActionFunctionArgs } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const action = async ({ request }: ActionFunctionArgs) =&gt; {\n  const { admin } = await authenticate.admin(request);\n\n  const response = await admin.graphql(\n    `#graphql\n    mutation populateProduct($input: ProductInput!) {\n      productCreate(input: $input) {\n        product {\n          id\n        }\n      }\n    }`,\n    {\n      variables: {\n        input: { title: \"Product Name\" },\n      },\n    },\n  );\n\n  const productData = await response.json();\n  return json({\n    productId: productData.data?.productCreate?.product?.id,\n  });\n}",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\n\nconst shopify = shopifyApp({\n  // ...\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            },
+            {
+              "description": "Catch `GraphqlQueryError` errors to see error messages from the API.",
+              "codeblock": {
+                "title": "Handling GraphQL errors",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { ActionFunctionArgs } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const action = async ({ request }: ActionFunctionArgs) =&gt; {\n  const { admin } = await authenticate.admin(request);\n\n  try {\n    const response = await admin.graphql(\n      `#graphql\n      query incorrectQuery {\n        products(first: 10) {\n          nodes {\n            not_a_field\n          }\n        }\n      }`,\n    );\n\n    return json({ data: await response.json() });\n  } catch (error) {\n    if (error instanceof GraphqlQueryError) {\n      // error.body.errors:\n      // { graphQLErrors: [\n      //   { message: \"Field 'not_a_field' doesn't exist on type 'Product'\" }\n      // ] }\n      return json({ errors: error.body?.errors }, { status: 500 });\n    }\n    return json({ message: \"An error occurred\" }, { status: 500 });\n  }\n}",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\n\nconst shopify = shopifyApp({\n  // ...\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "rest",
+          "examples": [
+            {
+              "description": "Getting the number of orders in a store using REST resources. Visit the [Admin REST API references](/docs/api/admin-rest) for examples on using each resource.",
+              "codeblock": {
+                "title": "Using REST resources",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { LoaderFunctionArgs, json } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const loader = async ({ request }: LoaderFunctionArgs) =&gt; {\n  const {\n    admin,\n    session,\n  } = await authenticate.admin(request);\n\n  return json(\n    admin.rest.resources.Order.count({ session }),\n  );\n};",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\nimport { restResources } from \"@shopify/shopify-api/rest/admin/2023-07\";\n\nconst shopify = shopifyApp({\n  restResources,\n  // ...etc\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            },
+            {
+              "description": "Use `admin.rest.get` to make custom requests to make a request to to the `customer/count` endpoint",
+              "codeblock": {
+                "title": "Performing a GET request to the REST API",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { LoaderFunctionArgs, json } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const loader = async ({ request }: LoaderFunctionArgs) =&gt; {\n  const {\n    admin,\n    session,\n  } = await authenticate.admin(request);\n\n  const response = await admin.rest.get({\n    path: \"/customers/count.json\",\n  });\n  const customers = await response.json();\n\n  return json({ customers });\n};",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\nimport { restResources } from \"@shopify/shopify-api/rest/admin/2023-04\";\n\nconst shopify = shopifyApp({\n  restResources,\n  // ...etc\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            },
+            {
+              "description": "Use `admin.rest.post` to make custom requests to make a request to to the `customers.json` endpoint to send a welcome email",
+              "codeblock": {
+                "title": "Performing a POST request to the REST API",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { LoaderFunctionArgs, json } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const loader = async ({ request }: LoaderFunctionArgs) =&gt; {\n  const {\n    admin,\n    session,\n  } = await authenticate.admin(request);\n\n  const response = admin.rest.post({\n    path: \"customers/7392136888625/send_invite.json\",\n    body: {\n      customer_invite: {\n        to: \"new_test_email@shopify.com\",\n        from: \"j.limited@example.com\",\n        bcc: [\"j.limited@example.com\"],\n        subject: \"Welcome to my new shop\",\n        custom_message: \"My awesome new store\",\n      },\n    },\n  });\n\n  const customerInvite = await response.json();\n  return json({ customerInvite });\n};",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\nimport { restResources } from \"@shopify/shopify-api/rest/admin/2023-04\";\n\nconst shopify = shopifyApp({\n  restResources,\n  // ...etc\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "graphql",
+          "examples": [
+            {
+              "description": "Use `admin.graphql` to make query / mutation requests.",
+              "codeblock": {
+                "title": "Querying the GraphQL API",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { ActionFunctionArgs } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const action = async ({ request }: ActionFunctionArgs) =&gt; {\n  const { admin } = await authenticate.admin(request);\n\n  const response = await admin.graphql(\n    `#graphql\n    mutation populateProduct($input: ProductInput!) {\n      productCreate(input: $input) {\n        product {\n          id\n        }\n      }\n    }`,\n    {\n      variables: {\n        input: { title: \"Product Name\" },\n      },\n    },\n  );\n\n  const productData = await response.json();\n  return json({\n    productId: productData.data?.productCreate?.product?.id,\n  });\n}",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\n\nconst shopify = shopifyApp({\n  // ...\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
+                    "language": "typescript"
+                  }
+                ]
+              }
+            },
+            {
+              "description": "Catch `GraphqlQueryError` errors to see error messages from the API.",
+              "codeblock": {
+                "title": "Handling GraphQL errors",
+                "tabs": [
+                  {
+                    "title": "/app/routes/**\\/*.ts",
+                    "code": "import { ActionFunctionArgs } from \"@remix-run/node\";\nimport { authenticate } from \"../shopify.server\";\n\nexport const action = async ({ request }: ActionFunctionArgs) =&gt; {\n  const { admin } = await authenticate.admin(request);\n\n  try {\n    const response = await admin.graphql(\n      `#graphql\n      query incorrectQuery {\n        products(first: 10) {\n          nodes {\n            not_a_field\n          }\n        }\n      }`,\n    );\n\n    return json({ data: await response.json() });\n  } catch (error) {\n    if (error instanceof GraphqlQueryError) {\n      // error.body.errors:\n      // { graphQLErrors: [\n      //   { message: \"Field 'not_a_field' doesn't exist on type 'Product'\" }\n      // ] }\n      return json({ errors: error.body?.errors }, { status: 500 });\n    }\n    return json({ message: \"An error occurred\" }, { status: 500 });\n  }\n}",
+                    "language": "typescript"
+                  },
+                  {
+                    "title": "/app/shopify.server.ts",
+                    "code": "import { shopifyApp } from \"@shopify/shopify-app-remix/server\";\n\nconst shopify = shopifyApp({\n  // ...\n});\nexport default shopify;\nexport const authenticate = shopify.authenticate;",
                     "language": "typescript"
                   }
                 ]
@@ -2969,6 +3145,14 @@
               {
                 "filePath": "src/server/clients/types.ts",
                 "syntaxKind": "PropertySignature",
+                "name": "signal",
+                "value": "AbortSignal",
+                "description": "An optional AbortSignal to cancel the request.",
+                "isOptional": true
+              },
+              {
+                "filePath": "src/server/clients/types.ts",
+                "syntaxKind": "PropertySignature",
                 "name": "tries",
                 "value": "number",
                 "description": "The total number of times to try the request if it fails.",
@@ -2983,7 +3167,7 @@
                 "isOptional": true
               }
             ],
-            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n}"
+            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n\n  /**\n   * An optional AbortSignal to cancel the request.\n   */\n  signal?: AbortSignal;\n}"
           }
         }
       }
@@ -4153,6 +4337,14 @@
               {
                 "filePath": "src/server/clients/types.ts",
                 "syntaxKind": "PropertySignature",
+                "name": "signal",
+                "value": "AbortSignal",
+                "description": "An optional AbortSignal to cancel the request.",
+                "isOptional": true
+              },
+              {
+                "filePath": "src/server/clients/types.ts",
+                "syntaxKind": "PropertySignature",
                 "name": "tries",
                 "value": "number",
                 "description": "The total number of times to try the request if it fails.",
@@ -4167,7 +4359,7 @@
                 "isOptional": true
               }
             ],
-            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n}"
+            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n\n  /**\n   * An optional AbortSignal to cancel the request.\n   */\n  signal?: AbortSignal;\n}"
           },
           "AdminApiContextWithRest": {
             "filePath": "src/server/clients/admin/types.ts",
@@ -4443,6 +4635,14 @@
               {
                 "filePath": "src/server/clients/types.ts",
                 "syntaxKind": "PropertySignature",
+                "name": "signal",
+                "value": "AbortSignal",
+                "description": "An optional AbortSignal to cancel the request.",
+                "isOptional": true
+              },
+              {
+                "filePath": "src/server/clients/types.ts",
+                "syntaxKind": "PropertySignature",
                 "name": "tries",
                 "value": "number",
                 "description": "The total number of times to try the request if it fails.",
@@ -4457,7 +4657,7 @@
                 "isOptional": true
               }
             ],
-            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n}"
+            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n\n  /**\n   * An optional AbortSignal to cancel the request.\n   */\n  signal?: AbortSignal;\n}"
           }
         }
       }
@@ -4562,6 +4762,22 @@
                 ]
               }
             ]
+          },
+          "Readonly": {
+            "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/components/TextField/TextField.d.ts",
+            "name": "Readonly",
+            "description": "",
+            "members": [
+              {
+                "filePath": "../../../node_modules/@shopify/polaris/build/ts/src/components/TextField/TextField.d.ts",
+                "syntaxKind": "PropertySignature",
+                "name": "readonly",
+                "value": "true",
+                "description": "",
+                "isOptional": true
+              }
+            ],
+            "value": "interface Readonly {\n    readonly?: true;\n}"
           },
           "ShopifyApp": {
             "filePath": "src/server/types.ts",
@@ -6243,6 +6459,14 @@
               {
                 "filePath": "src/server/clients/types.ts",
                 "syntaxKind": "PropertySignature",
+                "name": "signal",
+                "value": "AbortSignal",
+                "description": "An optional AbortSignal to cancel the request.",
+                "isOptional": true
+              },
+              {
+                "filePath": "src/server/clients/types.ts",
+                "syntaxKind": "PropertySignature",
                 "name": "tries",
                 "value": "number",
                 "description": "The total number of times to try the request if it fails.",
@@ -6257,7 +6481,7 @@
                 "isOptional": true
               }
             ],
-            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n}"
+            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n\n  /**\n   * An optional AbortSignal to cancel the request.\n   */\n  signal?: AbortSignal;\n}"
           },
           "AuthenticateCheckout": {
             "filePath": "src/server/authenticate/public/checkout/types.ts",
@@ -9208,6 +9432,14 @@
               {
                 "filePath": "src/server/clients/types.ts",
                 "syntaxKind": "PropertySignature",
+                "name": "signal",
+                "value": "AbortSignal",
+                "description": "An optional AbortSignal to cancel the request.",
+                "isOptional": true
+              },
+              {
+                "filePath": "src/server/clients/types.ts",
+                "syntaxKind": "PropertySignature",
                 "name": "tries",
                 "value": "number",
                 "description": "The total number of times to try the request if it fails.",
@@ -9222,7 +9454,7 @@
                 "isOptional": true
               }
             ],
-            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n}"
+            "value": "export interface GraphQLQueryOptions<\n  Operation extends keyof Operations,\n  Operations extends AllOperations,\n> {\n  /**\n   * The variables to pass to the operation.\n   */\n  variables?: ApiClientRequestOptions<Operation, Operations>['variables'];\n  /**\n   * The version of the API to use for the request.\n   */\n  apiVersion?: ApiVersion;\n  /**\n   * Additional headers to include in the request.\n   */\n  headers?: Record<string, any>;\n  /**\n   * The total number of times to try the request if it fails.\n   */\n  tries?: number;\n\n  /**\n   * An optional AbortSignal to cancel the request.\n   */\n  signal?: AbortSignal;\n}"
           }
         }
       }
