@@ -25,10 +25,15 @@ export type AdminApiContext<
   Resources extends ShopifyRestResources = ShopifyRestResources,
 > =
   FeatureEnabled<ConfigArg['future'], 'removeRest'> extends true
-    ? AdminApiContextWithoutRest
-    : AdminApiContextWithRest<Resources>;
+    ? AdminApiContextWithoutRest<
+        FeatureEnabled<ConfigArg['future'], 'matchGraphQLSpec'>
+      >
+    : AdminApiContextWithRest<
+        Resources,
+        FeatureEnabled<ConfigArg['future'], 'matchGraphQLSpec'>
+      >;
 
-export interface AdminApiContextWithoutRest {
+export interface AdminApiContextWithoutRest<TMatchGraphQLSpec extends boolean> {
   /**
    * Methods for interacting with the Shopify Admin GraphQL API
    *
@@ -128,12 +133,13 @@ export interface AdminApiContextWithoutRest {
    * export const authenticate = shopify.authenticate;
    * ```
    */
-  graphql: GraphQLClient<AdminOperations>;
+  graphql: GraphQLClient<AdminOperations, TMatchGraphQLSpec>;
 }
 
 export interface AdminApiContextWithRest<
   Resources extends ShopifyRestResources = ShopifyRestResources,
-> extends AdminApiContextWithoutRest {
+  TMatchGraphQLSpec extends boolean = false,
+> extends AdminApiContextWithoutRest<TMatchGraphQLSpec> {
   /**
    * Methods for interacting with the Shopify Admin REST API
    *

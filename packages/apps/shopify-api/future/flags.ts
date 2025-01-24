@@ -26,6 +26,12 @@ export interface FutureFlags {
    * resolves a conflict with the default() method in that class.
    */
   customerAddressDefaultFix?: boolean;
+
+  /**
+   * When enabled, the GraphQL client will match the spec and return `errors` on the response. When disabled, the client wiill throw errors instead.
+   * @default false
+   */
+  matchGraphQLSpec?: boolean;
 }
 
 /**

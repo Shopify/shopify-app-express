@@ -37,11 +37,15 @@ export interface GraphQLQueryOptions<
 export type GraphQLResponse<
   Operation extends keyof Operations,
   Operations extends AllOperations,
-> = ResponseWithType<FetchResponseBody<ReturnData<Operation, Operations>>>;
+  TMatchGraphQLSpec extends boolean,
+> = ResponseWithType<
+  FetchResponseBody<ReturnData<Operation, Operations>, TMatchGraphQLSpec>
+>;
 
-export type GraphQLClient<Operations extends AllOperations> = <
-  Operation extends keyof Operations,
->(
+export type GraphQLClient<
+  Operations extends AllOperations,
+  TMatchGraphQLSpec extends boolean,
+> = <Operation extends keyof Operations>(
   query: Operation,
   options?: GraphQLQueryOptions<Operation, Operations>,
-) => Promise<GraphQLResponse<Operation, Operations>>;
+) => Promise<GraphQLResponse<Operation, Operations, TMatchGraphQLSpec>>;

@@ -38,6 +38,12 @@ export interface FutureFlags {
    * @default false
    */
   removeRest?: boolean;
+
+  /**
+   * When enabled, the GraphQL client will match the spec and return `errors` on the response. When disabled, the client wiill throw errors instead.
+   * @default false
+   */
+  matchGraphQLSpec?: boolean;
 }
 
 // When adding new flags, use this format:
@@ -46,6 +52,11 @@ export interface ApiFutureFlags<_Future extends FutureFlagOptions> {
   // We're currently hardcoding this flag to true in our settings, so we should propagate it here
   lineItemBilling: true;
   unstable_managedPricingSupport: true;
+  /**
+   * When enabled, the GraphQL client will match the spec and return `errors` on the response. When disabled, the client wiill throw errors instead.
+   * @default false
+   */
+  matchGraphQLSpec?: boolean;
 }
 
 export type ApiConfigWithFutureFlags<Future extends FutureFlagOptions> =
