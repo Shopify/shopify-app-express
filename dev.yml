@@ -9,8 +9,10 @@ up:
       packages:
         - .
 env:
-  NODE_ENV: "development"
+  NODE_ENV: 'development'
 
 commands:
   server:
     run: pnpm dev
+  test:
+    run: pnpm test

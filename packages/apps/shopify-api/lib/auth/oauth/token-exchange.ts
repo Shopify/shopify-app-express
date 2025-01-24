@@ -1,5 +1,5 @@
 import {throwFailedRequest} from '../../clients/common';
-import {decodeSessionToken} from '../../session/decode-session-token';
+import {decodeIdToken} from '../../session/decode-id-token';
 import {sanitizeShop} from '../../utils/shop-validator';
 import {ConfigInterface} from '../../base-types';
 import {Session} from '../../session/session';
@@ -34,7 +34,7 @@ export function tokenExchange(config: ConfigInterface): TokenExchange {
     sessionToken,
     requestedTokenType,
   }: TokenExchangeParams) => {
-    await decodeSessionToken(config)(sessionToken);
+    await decodeIdToken(config)(sessionToken);
 
     const body = {
       client_id: config.apiKey,

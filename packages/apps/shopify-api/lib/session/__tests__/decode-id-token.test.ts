@@ -28,7 +28,7 @@ describe('JWT session token', () => {
     const shopify = shopifyApi(testConfig());
     const token = await signJWT(shopify.config.apiSecretKey, payload);
 
-    const actualPayload = await shopify.session.decodeSessionToken(token);
+    const actualPayload = await shopify.session.decodeIdToken(token);
     expect(actualPayload).toStrictEqual(payload);
   });
 
@@ -36,7 +36,7 @@ describe('JWT session token', () => {
     const shopify = shopifyApi(testConfig());
 
     await expect(
-      shopify.session.decodeSessionToken('not_a_valid_token'),
+      shopify.session.decodeIdToken('not_a_valid_token'),
     ).rejects.toThrow(ShopifyErrors.InvalidJwtError);
   });
 
@@ -47,7 +47,7 @@ describe('JWT session token', () => {
     invalidPayload.exp = new Date().getTime() / 1000 - 60;
 
     const token = await signJWT(shopify.config.apiSecretKey, invalidPayload);
-    await expect(shopify.session.decodeSessionToken(token)).rejects.toThrow(
+    await expect(shopify.session.decodeIdToken(token)).rejects.toThrow(
       ShopifyErrors.InvalidJwtError,
     );
   });
@@ -59,7 +59,7 @@ describe('JWT session token', () => {
     invalidPayload.nbf = new Date().getTime() / 1000 + 60;
 
     const token = await signJWT(shopify.config.apiSecretKey, invalidPayload);
-    await expect(shopify.session.decodeSessionToken(token)).rejects.toThrow(
+    await expect(shopify.session.decodeIdToken(token)).rejects.toThrow(
       ShopifyErrors.InvalidJwtError,
     );
   });
@@ -70,7 +70,7 @@ describe('JWT session token', () => {
     // The token is signed with a key that is not the current value
     const token = await signJWT(shopify.config.apiSecretKey, payload);
 
-    await expect(shopify.session.decodeSessionToken(token)).rejects.toThrow(
+    await expect(shopify.session.decodeIdToken(token)).rejects.toThrow(
       ShopifyErrors.InvalidJwtError,
     );
   });
@@ -81,7 +81,7 @@ describe('JWT session token', () => {
     // The token is signed with a key that is not the current value
     const token = await signJWT(shopify.config.apiSecretKey, payload);
 
-    const actualPayload = await shopify.session.decodeSessionToken(token, {
+    const actualPayload = await shopify.session.decodeIdToken(token, {
       checkAudience: false,
     });
     expect(actualPayload).toStrictEqual(payload);
@@ -96,9 +96,23 @@ describe('JWT session token', () => {
     // The token is signed with a key that is not the current value
     const token = await signJWT(shopify.config.apiSecretKey, payload);
 
-    const actualPayload = await shopify.session.decodeSessionToken(token, {
+    const actualPayload = await shopify.session.decodeIdToken(token, {
       checkAudience: false,
     });
     expect(actualPayload).toStrictEqual(payload);
+  });
+
+  test('provides legacy decodeSessionToken method when decodeIdToken is not enabled', async () => {
+    const shopify = shopifyApi(testConfig({future: {decodeIdToken: false}}));
+
+    // TODO: Make TypeScript happy
+    expect(shopify.session.decodeSessionToken).toBeDefined();
+  });
+
+  test('does not provide legacy decodeSessionToken method when decodeIdToken is enabled', async () => {
+    const shopify = shopifyApi(testConfig({future: {decodeIdToken: true}}));
+
+    // @ts-expect-error - decodeSessionToken is not defined in the ShopifySessionInterface
+    expect(shopify.session.decodeSessionToken).toBeUndefined();
   });
 });

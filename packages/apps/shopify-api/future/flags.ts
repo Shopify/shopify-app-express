@@ -26,6 +26,11 @@ export interface FutureFlags {
    * resolves a conflict with the default() method in that class.
    */
   customerAddressDefaultFix?: boolean;
+
+  /**
+   * Remove the deprecated `decodeSessionToken` from `shopifySession` and provide only the `decodeIdToken` method.
+   */
+  decodeIdToken?: boolean;
 }
 
 /**

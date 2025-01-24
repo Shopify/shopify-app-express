@@ -38,7 +38,7 @@ export interface Shopify<
   config: ConfigInterface<Params>;
   clients: ShopifyClients;
   auth: ShopifyAuth;
-  session: ShopifySession;
+  session: ShopifySession<ConfigInterface<Params>>;
   utils: ShopifyUtils;
 
   /**
@@ -62,7 +62,7 @@ export interface Shopify<
 export function shopifyApi<
   Params extends ConfigParams<Resources, Future>,
   Resources extends ShopifyRestResources,
-  Future extends FutureFlagOptions,
+  Future extends FutureFlagOptions = Params['future'],
 >({
   future,
   restResources,
@@ -79,7 +79,10 @@ export function shopifyApi<
     config: validatedConfig,
     clients: clientClasses(validatedConfig),
     auth: shopifyAuth(validatedConfig),
-    session: shopifySession(validatedConfig),
+    // TODO: This doesn't seem right
+    session: shopifySession(
+      validatedConfig as ConfigInterface<ConfigParams<any, Future>>,
+    ),
     utils: shopifyUtils(validatedConfig),
     webhooks: shopifyWebhooks(validatedConfig),
     billing: shopifyBilling(validatedConfig),

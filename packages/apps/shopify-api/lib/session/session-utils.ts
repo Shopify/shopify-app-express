@@ -9,7 +9,7 @@ import {sanitizeShop} from '../utils/shop-validator';
 import {logger} from '../logger';
 import * as ShopifyErrors from '../error';
 
-import {decodeSessionToken} from './decode-session-token';
+import {decodeIdToken} from './decode-id-token';
 import type {GetCurrentSessionIdParams} from './types';
 import {Session} from './session';
 
@@ -52,7 +52,7 @@ export function getCurrentSessionId(config: ConfigInterface) {
           );
         }
 
-        const jwtPayload = await decodeSessionToken(config)(matches[1]);
+        const jwtPayload = await decodeIdToken(config)(matches[1]);
         const shop = jwtPayload.dest.replace(/^https:\/\//, '');
 
         log.debug('Found valid JWT payload', {shop, isOnline});

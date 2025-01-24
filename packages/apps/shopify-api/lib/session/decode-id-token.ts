@@ -8,14 +8,14 @@ import {JwtPayload} from './types';
 
 const JWT_PERMITTED_CLOCK_TOLERANCE = 10;
 
-export interface DecodeSessionTokenOptions {
+export interface DecodeIdTokenOptions {
   checkAudience?: boolean;
 }
 
-export function decodeSessionToken(config: ConfigInterface) {
+export function decodeIdToken(config: ConfigInterface) {
   return async (
     token: string,
-    {checkAudience = true}: DecodeSessionTokenOptions = {},
+    {checkAudience = true}: DecodeIdTokenOptions = {},
   ): Promise<JwtPayload> => {
     let payload: JwtPayload;
     try {
