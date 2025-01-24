@@ -2,10 +2,7 @@ import {
   AppProvider as PolarisAppProvider,
   AppProviderProps as PolarisAppProviderProps,
 } from '@shopify/polaris';
-// This leads to some TS errors, but it does compile to something that works
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import englishI18n from '@shopify/polaris/locales/en.json' with {type: 'json'};
+import englishI18n from '@shopify/polaris/locales/en.json';
 
 import {APP_BRIDGE_URL} from '../../const';
 import {RemixPolarisLink} from '../RemixPolarisLink';
