@@ -103,7 +103,7 @@
     "miniflare": "^3.20241230.2",
     "rollup": "^4.31.0",
     "rollup-plugin-swc": "^0.2.1",
-    "wrangler": "^3.103.2"
+    "wrangler": "^3.105.1"
   },
   "files": [
     "dist/*",
