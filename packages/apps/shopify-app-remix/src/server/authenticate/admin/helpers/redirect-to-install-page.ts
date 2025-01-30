@@ -2,7 +2,10 @@ import {redirect as remixRedirect} from '@remix-run/server-runtime';
 
 import type {BasicParams} from '../../../types';
 
-import {redirectWithAppBridgeHeaders} from './redirect-with-app-bridge-headers';
+import {
+  redirectWithAppBridgeHeaders,
+  redirectWithResponseWithAppBridgeHeaders,
+} from './redirect-with-app-bridge-headers';
 
 export async function redirectToInstallPage(
   params: BasicParams,
@@ -11,7 +14,11 @@ export async function redirectToInstallPage(
 ): Promise<never> {
   const installUrl = buildInstallUrl(params, shop, optionalScopes);
   if (params.config.isEmbeddedApp) {
-    throw redirectWithAppBridgeHeaders(installUrl);
+    if (params.config.future.remixSingleFetch) {
+      throw redirectWithAppBridgeHeaders(installUrl);
+    } else {
+      throw redirectWithResponseWithAppBridgeHeaders(installUrl);
+    }
   } else {
     throw remixRedirect(installUrl);
   }

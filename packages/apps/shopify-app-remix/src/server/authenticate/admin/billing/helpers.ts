@@ -18,9 +18,17 @@ export function redirectOutOfApp(
   const isXhrRequest = request.headers.get('authorization');
 
   if (isXhrRequest) {
-    throw redirect(url, {
-      headers: getAppBridgeHeaders(url),
-    });
+    if (config.future.remixSingleFetch) {
+      throw redirect(url, {
+        headers: getAppBridgeHeaders(url),
+      });
+    } else {
+      throw new Response(undefined, {
+        status: 401,
+        statusText: 'Unauthorized',
+        headers: getAppBridgeHeaders(url),
+      });
+    }
   } else if (isEmbeddedRequest) {
     const params = new URLSearchParams({
       shop,
