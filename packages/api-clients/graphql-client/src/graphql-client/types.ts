@@ -1,5 +1,5 @@
 interface CustomRequestInit {
-  method?: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: HeadersInit;
   body?: string;
   signal?: AbortSignal;
@@ -10,7 +10,7 @@ export type CustomFetchApi = (
   init?: CustomRequestInit,
 ) => Promise<Response>;
 
-type OperationVariables = Record<string, any>;
+type OperationVariables<TVariables = Record<string, any>> = TVariables;
 
 export type DataChunk = Buffer | Uint8Array;
 
@@ -21,11 +21,28 @@ export type {HeadersObject as Headers};
 export interface ResponseErrors {
   networkStatusCode?: number;
   message?: string;
-  graphQLErrors?: any[];
+  graphQLErrors?: {
+    message: string;
+    extensions?: GQLExtensions;
+  }[];
   response?: Response;
 }
 
-export type GQLExtensions = Record<string, any>;
+export interface GQLExtensions {
+  cost?: {
+    requestedQueryCost: number;
+    actualQueryCost: number;
+    throttleStatus: {
+      maximumAvailable: number;
+      currentlyAvailable: number;
+      restoreRate: number;
+    };
+    code?: string;
+    maxCost?: number;
+    documentation?: string;
+    [key: string]: unknown;
+  };
+}
 
 export interface FetchResponseBody<TData = any> {
   data?: TData;
@@ -36,6 +53,12 @@ export interface FetchResponseBody<TData = any> {
 export interface ClientResponse<TData = any> extends FetchResponseBody<TData> {
   errors?: ResponseErrors;
 }
+
+export type SuccessClientResponse<TData = any> = Omit<
+  ClientResponse<TData>,
+  'errors'
+>;
+export type ErrorClientResponse = Omit<ClientResponse, 'data' | 'extensions'>;
 
 export interface ClientStreamResponse<TData = any>
   extends ClientResponse<TData> {
@@ -90,11 +113,11 @@ export interface ClientConfig {
 }
 
 export interface RequestOptions {
-  variables?: OperationVariables;
-  url?: string;
-  headers?: HeadersObject;
-  retries?: number;
-  signal?: AbortSignal;
+  readonly variables?: OperationVariables;
+  readonly url?: string;
+  readonly headers?: HeadersObject;
+  readonly retries?: number;
+  readonly signal?: AbortSignal;
 }
 
 export type RequestParams = [operation: string, options?: RequestOptions];
