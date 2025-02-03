@@ -30,6 +30,8 @@ const HANDLER_PROPERTIES = {
   hmac: ShopifyHeader.Hmac,
   topic: ShopifyHeader.Topic,
   webhookId: ShopifyHeader.WebhookId,
+  triggeredAt: ShopifyHeader.TriggeredAt,
+  eventId: ShopifyHeader.EventId,
   ...OPTIONAL_HANDLER_PROPERTIES,
 };
 

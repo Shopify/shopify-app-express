@@ -27,6 +27,8 @@ export function headers({
   hmac = 'fake',
   topic = 'products/create',
   webhookId = '123456789',
+  triggeredAt = '2023-01-01T00:00:00Z',
+  eventId = '123456789',
   // must explicitly set to test for presence
   subTopic = '',
   lowercase = false,
@@ -37,6 +39,8 @@ export function headers({
   topic?: string;
   webhookId?: string;
   subTopic?: string;
+  triggeredAt?: string;
+  eventId?: string;
   lowercase?: boolean;
 } = {}) {
   return {
@@ -58,6 +62,11 @@ export function headers({
             : ShopifyHeader.SubTopic]: subTopic,
         }
       : {}),
+    [lowercase
+      ? ShopifyHeader.TriggeredAt.toLowerCase()
+      : ShopifyHeader.TriggeredAt]: triggeredAt,
+    [lowercase ? ShopifyHeader.EventId.toLowerCase() : ShopifyHeader.EventId]:
+      eventId,
   };
 }
 
