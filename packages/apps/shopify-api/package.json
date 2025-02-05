@@ -83,7 +83,7 @@
     "@shopify/network": "^3.3.0",
     "@shopify/storefront-api-client": "^1.0.4",
     "compare-versions": "^6.1.1",
-    "isbot": "^5.1.21",
+    "isbot": "^5.1.22",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.6.1",

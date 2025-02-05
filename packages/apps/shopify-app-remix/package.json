@@ -99,7 +99,7 @@
     "@shopify/shopify-api": "^11.8.1",
     "@shopify/shopify-app-session-storage": "^3.0.12",
     "@shopify/storefront-api-client": "^1.0.4",
-    "isbot": "^5.1.21",
+    "isbot": "^5.1.22",
     "semver": "^7.7.0"
   },
   "peerDependencies": {
