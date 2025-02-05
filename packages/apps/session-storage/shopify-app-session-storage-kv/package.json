@@ -51,7 +51,7 @@
     "@shopify/shopify-app-session-storage": "^3.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250129.0",
+    "@cloudflare/workers-types": "^4.20250204.0",
     "@shopify/shopify-app-session-storage-test-utils": "^3.0.12",
     "miniflare": "^3.20250129.0"
   },
