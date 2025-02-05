@@ -146,6 +146,18 @@ export const testSuite = [
     },
   },
   {
+    name: 'gracefully handles 301 redirect',
+    config: {
+      testRequest: initTestRequest({
+        url: '/url/path/301',
+        type: TestType.Graphql,
+      }),
+      expectedResponse: initTestResponse({
+        statusCode: 204,
+      }),
+    },
+  },
+  {
     name: 'gracefully handles 403 error',
     config: {
       testRequest: initTestRequest({url: '/url/path/403'}),
