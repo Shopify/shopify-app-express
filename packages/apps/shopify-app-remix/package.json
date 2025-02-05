@@ -77,9 +77,9 @@
     "Storefront API"
   ],
   "devDependencies": {
-    "@remix-run/node": "^2.15.2",
-    "@remix-run/react": "^2.15.2",
-    "@remix-run/testing": "^2.15.2",
+    "@remix-run/node": "^2.15.3",
+    "@remix-run/react": "^2.15.3",
+    "@remix-run/testing": "^2.15.3",
     "@shopify/generate-docs": "^0.16.4",
     "@shopify/polaris": "^12.18.0",
     "@shopify/react-testing": "^6.0.0",
@@ -94,7 +94,7 @@
     "jsonwebtoken": "^9.0.2"
   },
   "dependencies": {
-    "@remix-run/server-runtime": "^2.15.2",
+    "@remix-run/server-runtime": "^2.15.3",
     "@shopify/admin-api-client": "^1.0.5",
     "@shopify/shopify-api": "^11.8.1",
     "@shopify/shopify-app-session-storage": "^3.0.12",
