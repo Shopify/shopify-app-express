@@ -100,7 +100,7 @@
     "@shopify/shopify-app-session-storage": "^3.0.12",
     "@shopify/storefront-api-client": "^1.0.4",
     "isbot": "^5.1.21",
-    "semver": "^7.7.0"
+    "semver": "^7.7.1"
   },
   "peerDependencies": {
     "@remix-run/node": "*",
