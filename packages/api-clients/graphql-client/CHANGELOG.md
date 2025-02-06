@@ -1,5 +1,28 @@
 # @shopify/graphql-client
 
+## 1.3.0
+
+### Minor Changes
+
+- 4603b69: Make fetch's keepalive configurable when making requests
+
+  Example:
+
+  ```typescript
+  const shopQuery = `
+    query ShopQuery {
+      shop {
+        name
+        id
+      }
+    }
+  `;
+
+  const {data, errors, extensions} = await client.request(shopQuery, {
+    keepalive: true,
+  });
+  ```
+
 ## 1.2.2
 
 ### Patch Changes

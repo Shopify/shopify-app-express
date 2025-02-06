@@ -1,5 +1,15 @@
 # Changelog
 
+## 11.8.2
+
+### Patch Changes
+
+- 7aaa0a8: Convert all Money.amount returned from the Billing GraphQL API from string to number type
+- Updated dependencies [4603b69]
+  - @shopify/graphql-client@1.3.0
+  - @shopify/admin-api-client@1.0.6
+  - @shopify/storefront-api-client@1.0.5
+
 ## 11.8.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @shopify/shopify-app-session-storage-kv
 
+## 4.0.13
+
+### Patch Changes
+
+- b83364c: Updated `semver` dependencies
+
 ## 4.0.12
 
 ## 4.0.11
