@@ -44,7 +44,7 @@ export function getPlugins({
 export const esmConfigs = {
   dir: './dist/esm',
   format: 'es',
-  sourcemap: true,
+  sourcemap: "inline",
   preserveModules: true,
   preserveModulesRoot: 'src',
   entryFileNames: '[name].mjs',
@@ -54,7 +54,7 @@ export const esmConfigs = {
 export const cjsConfigs = {
   dir: './dist/cjs',
   format: 'cjs',
-  sourcemap: true,
+  sourcemap: "inline",
   preserveModules: true,
   preserveModulesRoot: 'src',
   exports: 'named',
