@@ -178,6 +178,7 @@ export function deriveApi(appConfig: AppConfigArg): BasicParams['api'] {
     future: {
       lineItemBilling: true,
       unstable_managedPricingSupport: true,
+      matchGraphQLSpec: appConfig.future?.matchGraphQLSpec ?? false,
     },
     _logDisabledFutureFlags: false,
   });

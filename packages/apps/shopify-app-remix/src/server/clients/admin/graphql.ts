@@ -8,11 +8,13 @@ import {AdminClientOptions} from './types';
 // TODO: This is actually just a call through to the Shopify API client, but with a different API. We should eventually
 // move this over to the library layer. While doing that, we should also allow the apiVersion to be passed into the REST
 // client request calls.
-export function graphqlClientFactory({
+export function graphqlClientFactory<
+  TMatchGraphQLSpec extends boolean = false,
+>({
   params,
   handleClientError,
   session,
-}: AdminClientOptions): GraphQLClient<AdminOperations> {
+}: AdminClientOptions): GraphQLClient<AdminOperations, TMatchGraphQLSpec> {
   return async function query(operation, options) {
     const client = new params.api.clients.Graphql({
       session,

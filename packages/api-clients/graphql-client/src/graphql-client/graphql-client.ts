@@ -41,6 +41,7 @@ export function createGraphQLClient({
   customFetchApi = fetch,
   retries = 0,
   logger,
+  matchGraphQLSpec = false,
 }: ClientOptions): GraphQLClient {
   validateRetries({client: CLIENT, retries});
 
@@ -57,8 +58,8 @@ export function createGraphQLClient({
     defaultRetryWaitTime: RETRY_WAIT_TIME,
   });
   const fetchFn = generateFetch(httpFetch, config);
-  const request = generateRequest(fetchFn);
-  const requestStream = generateRequestStream(fetchFn);
+  const request = generateRequest(fetchFn, matchGraphQLSpec);
+  const requestStream = generateRequestStream(fetchFn, matchGraphQLSpec);
 
   return {
     config,
@@ -76,11 +77,20 @@ export function generateClientLogger(logger?: Logger): Logger {
   };
 }
 
-async function processJSONResponse<TData = any>(
+async function processJSONResponse<
+  TData = any,
+  TMatchGraphQLSpec extends boolean = false,
+>(
   response: Response,
-): Promise<ClientResponse<TData>> {
-  const {errors, data, extensions} = await response.json<any>();
+  matchGraphQLSpec: TMatchGraphQLSpec,
+): Promise<ClientResponse<TData, TMatchGraphQLSpec>> {
+  const fullData = await response.json<any>();
+  if (matchGraphQLSpec) {
+    return fullData;
+  }
 
+  const {errors, data, extensions} = fullData;
+  // @ts-ignore
   return {
     ...getKeyValueIfValid('data', data),
     ...getKeyValueIfValid('extensions', extensions),
@@ -150,9 +160,11 @@ function generateFetch(
   };
 }
 
-function generateRequest(
+function generateRequest<TMatchGraphQLSpec extends boolean>(
   fetchFn: ReturnType<typeof generateFetch>,
+  matchGraphQLSpec: TMatchGraphQLSpec,
 ): GraphQLClient['request'] {
+  // @ts-ignore
   return async (...props) => {
     if (DEFER_OPERATION_REGEX.test(props[0])) {
       throw new Error(
@@ -168,34 +180,43 @@ function generateRequest(
       const contentType = response.headers.get('content-type') || '';
 
       if (!response.ok) {
-        return {
-          errors: {
-            networkStatusCode: status,
-            message: formatErrorMessage(statusText),
-            response,
-          },
-        };
+        const message = formatErrorMessage(statusText);
+        return matchGraphQLSpec
+          ? {errors: [{message}]}
+          : {
+              errors: {
+                networkStatusCode: status,
+                message,
+                response,
+              },
+            };
       }
 
       if (!contentType.includes(CONTENT_TYPES.json)) {
-        return {
-          errors: {
-            networkStatusCode: status,
-            message: formatErrorMessage(
-              `${UNEXPECTED_CONTENT_TYPE_ERROR} ${contentType}`,
-            ),
-            response,
-          },
-        };
+        const message = formatErrorMessage(
+          `${UNEXPECTED_CONTENT_TYPE_ERROR} ${contentType}`,
+        );
+        return matchGraphQLSpec
+          ? {errors: [{message}]}
+          : {
+              errors: {
+                networkStatusCode: status,
+                message,
+                response,
+              },
+            };
       }
 
-      return processJSONResponse(response);
+      return processJSONResponse(response, matchGraphQLSpec);
     } catch (error) {
-      return {
-        errors: {
-          message: getErrorMessage(error),
-        },
-      };
+      const message = getErrorMessage(error);
+      return matchGraphQLSpec
+        ? {errors: [{message}]}
+        : {
+            errors: {
+              message,
+            },
+          };
     }
   };
 }
@@ -274,10 +295,16 @@ function readStreamChunk(
   };
 }
 
-function createJsonResponseAsyncIterator(response: Response) {
+function createJsonResponseAsyncIterator<TMatchGraphQLSpec extends boolean>(
+  response: Response,
+  matchGraphQLSpec: TMatchGraphQLSpec,
+) {
   return {
     async *[Symbol.asyncIterator]() {
-      const processedResponse = await processJSONResponse(response);
+      const processedResponse = await processJSONResponse(
+        response,
+        matchGraphQLSpec,
+      );
 
       yield {
         ...processedResponse,
@@ -434,9 +461,11 @@ function createMultipartResponseAsyncInterator(
   };
 }
 
-function generateRequestStream(
+function generateRequestStream<TMatchGraphQLSpec extends boolean>(
   fetchFn: ReturnType<typeof generateFetch>,
+  matchGraphQLSpec: TMatchGraphQLSpec,
 ): GraphQLClient['requestStream'] {
+  // @ts-ignore
   return async (...props) => {
     if (!DEFER_OPERATION_REGEX.test(props[0])) {
       throw new Error(
@@ -459,7 +488,7 @@ function generateRequestStream(
 
       switch (true) {
         case responseContentType.includes(CONTENT_TYPES.json):
-          return createJsonResponseAsyncIterator(response);
+          return createJsonResponseAsyncIterator(response, matchGraphQLSpec);
         case responseContentType.includes(CONTENT_TYPES.multipart):
           return createMultipartResponseAsyncInterator(
             response,

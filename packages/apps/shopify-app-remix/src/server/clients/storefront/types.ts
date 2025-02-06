@@ -2,7 +2,7 @@ import {StorefrontOperations} from '@shopify/storefront-api-client';
 
 import {GraphQLClient} from '../types';
 
-export interface StorefrontContext {
+export interface StorefrontContext<TMatchGraphQLSpec extends boolean = false> {
   /**
    * Method for interacting with the Shopify Storefront GraphQL API
    *
@@ -74,5 +74,5 @@ export interface StorefrontContext {
    * export const authenticate = shopify.authenticate;
    * ```
    */
-  graphql: GraphQLClient<StorefrontOperations>;
+  graphql: GraphQLClient<StorefrontOperations, TMatchGraphQLSpec>;
 }

@@ -63,6 +63,7 @@ export class GraphqlClient {
       logger: clientLoggerFactory(config),
       userAgentPrefix: getUserAgent(config),
       isTesting: config.isTesting,
+      matchGraphQLSpec: config.future?.matchGraphQLSpec,
     });
   }
 
@@ -127,7 +128,11 @@ export class GraphqlClient {
       ...(options as ApiClientRequestOptions<Operation, AdminOperations>),
     });
 
-    if (response.errors) {
+    const matchGraphQLSpec =
+      this.graphqlClass().config.future?.matchGraphQLSpec ?? false;
+
+    if (response.errors && !matchGraphQLSpec) {
+      // @ts-ignore
       const fetchResponse = response.errors.response;
 
       throwFailedRequest(response, (options?.retries ?? 0) > 0, fetchResponse);

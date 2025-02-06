@@ -30,6 +30,7 @@ export function createAdminApiClient({
   customFetchApi,
   logger,
   isTesting,
+  matchGraphQLSpec,
 }: AdminApiClientOptions): AdminApiClient {
   const currentSupportedApiVersions = getCurrentSupportedApiVersions();
 
@@ -81,6 +82,7 @@ export function createAdminApiClient({
     retries,
     customFetchApi,
     logger,
+    matchGraphQLSpec,
   });
 
   const getHeaders = generateGetHeaders(config);

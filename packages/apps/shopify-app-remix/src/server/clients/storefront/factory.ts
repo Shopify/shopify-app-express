@@ -4,13 +4,15 @@ import {BasicParams} from '../../types';
 
 import type {StorefrontContext} from '.';
 
-export function storefrontClientFactory({
+export function storefrontClientFactory<
+  TMatchGraphQLSpec extends boolean = false,
+>({
   params,
   session,
 }: {
   params: BasicParams;
   session: Session;
-}): StorefrontContext {
+}): StorefrontContext<TMatchGraphQLSpec> {
   const {api} = params;
 
   return {

@@ -26,16 +26,32 @@ export interface ResponseErrors {
   response?: Response;
 }
 
+export interface SpecResponseError {
+  message: string;
+  locations?: {line: number; column: number}[];
+  path?: string[];
+  extensions?: GQLExtensions;
+}
+
 export type GQLExtensions = Record<string, any>;
 
-export interface FetchResponseBody<TData = any> {
+export interface FetchResponseBody<
+  TData = any,
+  TMatchGraphQLSpec extends boolean = false,
+> {
   data?: TData;
   extensions?: GQLExtensions;
   headers?: Headers;
+  errors?: TMatchGraphQLSpec extends true ? SpecResponseError[] : never;
 }
 
-export interface ClientResponse<TData = any> extends FetchResponseBody<TData> {
-  errors?: ResponseErrors;
+export interface ClientResponse<
+  TData = any,
+  TMatchGraphQLSpec extends boolean = false,
+> extends Omit<FetchResponseBody<TData, TMatchGraphQLSpec>, 'errors'> {
+  errors?: TMatchGraphQLSpec extends true
+    ? SpecResponseError[]
+    : ResponseErrors;
 }
 
 export interface ClientStreamResponse<TData = any>
@@ -82,6 +98,7 @@ export interface ClientOptions {
   customFetchApi?: CustomFetchApi;
   retries?: number;
   logger?: Logger;
+  matchGraphQLSpec?: boolean;
 }
 
 export interface ClientConfig {
