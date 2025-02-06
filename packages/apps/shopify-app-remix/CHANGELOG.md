@@ -1,5 +1,16 @@
 # @shopify/shopify-app-remix
 
+## 3.7.2
+
+### Patch Changes
+
+- b83364c: Updated `semver` dependencies
+- Updated dependencies [7aaa0a8]
+  - @shopify/shopify-api@11.8.2
+  - @shopify/shopify-app-session-storage@3.0.13
+  - @shopify/admin-api-client@1.0.6
+  - @shopify/storefront-api-client@1.0.5
+
 ## 3.7.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@shopify/shopify-app-session-storage-postgresql",
-  "version": "4.0.12",
+  "version": "4.0.13",
   "description": "Shopify App Session Storage for PostgreSQL",
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "@shopify/shopify-app-session-storage": "^3.0.0"
   },
   "devDependencies": {
-    "@shopify/shopify-app-session-storage-test-utils": "^3.0.12",
+    "@shopify/shopify-app-session-storage-test-utils": "^3.0.13",
     "@types/pg": "^8.11.11"
   },
   "files": [

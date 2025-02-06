@@ -1,5 +1,7 @@
 # @shopify/shopify-app-session-storage-dynamodb
 
+## 4.0.13
+
 ## 4.0.12
 
 ## 4.0.11
