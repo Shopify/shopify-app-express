@@ -48,6 +48,13 @@ export interface OnlineAccessInfo {
   associated_user: OnlineAccessUser;
 }
 
+export interface OfflineAccessInfo {
+  /**
+   * How long the access token is valid for, in seconds.
+   */
+  expires_in?: number;
+}
+
 export interface OnlineAccessUser {
   /**
    * The user's ID.
@@ -86,3 +93,7 @@ export interface OnlineAccessUser {
 export interface OnlineAccessResponse
   extends AccessTokenResponse,
     OnlineAccessInfo {}
+
+export interface OfflineAccessResponse
+  extends AccessTokenResponse,
+    OfflineAccessInfo {}

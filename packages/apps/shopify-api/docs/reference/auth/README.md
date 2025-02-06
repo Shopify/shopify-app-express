@@ -20,6 +20,14 @@ Learn more about [authorization code grant flow](../../guides/oauth.md#authoriza
 | [callback](./callback.md)                       | Receive Shopify's callback after the user approves the app installation.                          |
 | [nonce](./nonce.md)                             | Generates a random string of characters to be used as the state value for OAuth.                  |
 
+## Client Credentials Grant
+
+Learn more about [client credentials grant](../../guides/oauth.md#client-credentials-grant).
+
+| Property                                        | Description                                                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [clientCredentials](./clientcredentials.md)     | Performs client credentials grant to get access token from app's client ID and client secret.    |
+
 ## Utility Functions
 
 | Property                                        | Description                                                                                       |

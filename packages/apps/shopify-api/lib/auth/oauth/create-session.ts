@@ -9,6 +9,7 @@ import {
   AccessTokenResponse,
   OnlineAccessResponse,
   OnlineAccessInfo,
+  OfflineAccessResponse,
 } from './types';
 
 export function createSession({
@@ -28,41 +29,43 @@ export function createSession({
 
   logger(config).info('Creating new session', {shop, isOnline});
 
-  if (isOnline) {
-    let sessionId: string;
-    const responseBody = accessTokenResponse as OnlineAccessResponse;
+  const getSessionExpiration = (expires_in: number) =>
+    new Date(Date.now() + expires_in * 1000);
+
+  const getOnlineSessionProperties = (responseBody: OnlineAccessResponse) => {
     const {access_token, scope, ...rest} = responseBody;
-    const sessionExpiration = new Date(
-      Date.now() + responseBody.expires_in * 1000,
-    );
+    const sessionId = config.isEmbeddedApp
+      ? getJwtSessionId(config)(
+          shop,
+          `${(rest as OnlineAccessInfo).associated_user.id}`,
+        )
+      : uuidv4();
 
-    if (config.isEmbeddedApp) {
-      sessionId = getJwtSessionId(config)(
-        shop,
-        `${(rest as OnlineAccessInfo).associated_user.id}`,
-      );
-    } else {
-      sessionId = uuidv4();
-    }
-
-    return new Session({
+    return {
       id: sessionId,
-      shop,
-      state,
-      isOnline,
-      accessToken: access_token,
-      scope,
-      expires: sessionExpiration,
       onlineAccessInfo: rest,
-    });
-  } else {
-    return new Session({
+      expires: getSessionExpiration(rest.expires_in),
+    };
+  };
+
+  const getOfflineSessionProperties = (responseBody: OfflineAccessResponse) => {
+    const {expires_in} = responseBody;
+    return {
       id: getOfflineId(config)(shop),
-      shop,
-      state,
-      isOnline,
-      accessToken: accessTokenResponse.access_token,
-      scope: accessTokenResponse.scope,
-    });
-  }
+      ...(expires_in && {expires: getSessionExpiration(expires_in)}),
+    };
+  };
+
+  return new Session({
+    shop,
+    state,
+    isOnline,
+    accessToken: accessTokenResponse.access_token,
+    scope: accessTokenResponse.scope,
+    ...(isOnline
+      ? getOnlineSessionProperties(accessTokenResponse as OnlineAccessResponse)
+      : getOfflineSessionProperties(
+          accessTokenResponse as OfflineAccessResponse,
+        )),
+  });
 }

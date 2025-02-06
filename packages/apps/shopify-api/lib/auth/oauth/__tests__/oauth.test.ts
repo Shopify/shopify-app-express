@@ -566,7 +566,6 @@ describe('callback', () => {
     const successResponse = {
       access_token: 'some access token',
       scope: 'pet_kitties, walk_dogs',
-      expires_in: 525600,
     };
     const testCallbackQuery: QueryMock = {
       shop,
@@ -613,7 +612,66 @@ describe('callback', () => {
       }),
     ).rejects.toThrow(ShopifyErrors.BotActivityDetected);
   });
+  test('create Session without setting an OAuth cookie for expiring offline tokens, embedded apps', async () => {
+    const shopify = shopifyApi(testConfig({isEmbeddedApp: true}));
 
+    const beginResponse: NormalizedResponse = await shopify.auth.begin({
+      shop,
+      isOnline: false,
+      callbackPath: '/some-callback',
+      rawRequest: request,
+    });
+    setCallbackCookieFromResponse(
+      request,
+      beginResponse,
+      shopify.config.apiSecretKey,
+    );
+
+    const successResponse = {
+      access_token: 'some access token',
+      scope: 'pet_kitties, walk_dogs',
+      expires_in: 525600,
+    };
+    const expectedExpiration = new Date(
+      Date.now() + successResponse.expires_in * 1000,
+    ).getTime();
+    const testCallbackQuery: QueryMock = {
+      shop,
+      state: VALID_NONCE,
+      timestamp: getCurrentTimeInSec().toString(),
+      code: 'some random auth code',
+    };
+    const expectedHmac = await generateLocalHmac(shopify.config)(
+      testCallbackQuery,
+    );
+    testCallbackQuery.hmac = expectedHmac;
+    request.url += `?${new URLSearchParams(testCallbackQuery).toString()}`;
+
+    queueMockResponse(JSON.stringify(successResponse));
+
+    const callbackResponse = await shopify.auth.callback({rawRequest: request});
+
+    const responseCookies = Cookies.parseCookies(
+      callbackResponse.headers['Set-Cookie'],
+    );
+
+    expect(callbackResponse.session).toEqual(
+      expect.objectContaining({
+        id: getOfflineId(shopify.config)(shop),
+        isOnline: false,
+        accessToken: successResponse.access_token,
+        scope: successResponse.scope,
+        shop,
+        state: VALID_NONCE,
+      }),
+    );
+    expect(callbackResponse.session.expires?.getTime()).toBeWithinSecondsOf(
+      expectedExpiration,
+      1,
+    );
+
+    expect(responseCookies.shopify_app_session).toBeUndefined();
+  });
   test('properly updates the OAuth cookie for offline, non-embedded apps', async () => {
     const shopify = shopifyApi(testConfig({isEmbeddedApp: false}));
 
@@ -632,7 +690,6 @@ describe('callback', () => {
     const successResponse = {
       access_token: 'some access token',
       scope: 'pet_kitties, walk_dogs',
-      expires_in: 525600,
     };
     const testCallbackQuery: QueryMock = {
       shop,

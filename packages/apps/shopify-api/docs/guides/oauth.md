@@ -26,6 +26,10 @@ with [token exchange](#token-exchange) instead of the authorization code grant f
 2. [Authorization Code Grant Flow](#authorization-code-grant-flow)
     - Suitable for non-embedded apps
     - Installations, and access scope changes are managed by the app
+3. [Client Credentials Grant](#client-credentials-grant)
+    - Suitable for backend apps without UI
+    - Doesn't require user interaction in the browser
+    - Access scopes can be configured either in the Developer Dashboard when creating an app version or in your app's [TOML configuration file](https://shopify.dev/docs/apps/build/cli-for-apps/app-configuration#access_scopes)
 
 ## Token Exchange
 OAuth process by exchanging the current user's [session token](https://shopify.dev/docs/apps/auth/session-tokens) for an
@@ -79,21 +83,26 @@ To perform [authorization code grant flow](https://shopify.dev/docs/apps/auth/ge
 1. Start the process by calling [shopify.auth.begin](../reference/auth/begin.md) to redirect the merchant to Shopify, to ask for permission to install the app.
 1. Return the merchant to your app once they approve the app installation, by calling [shopify.auth.callback](../reference/auth/callback.md) to set up a session with an API access token.
 
-#### Detecting scope changes
+## Client Credentials Grant
+> [!NOTE]
+> You should consider using the client credentials grant only when building apps for your own organization.
 
-When the OAuth process is completed, the created session has a `scope` field which holds all of the access scopes that were requested from the merchant at the time.
+> [!WARNING]
+> [token exchange](#token-exchange) (for embedded apps) or the [authorization code grant flow](#authorization-code-grant-flow) should be used instead of the client credentials grant, if your app is a browser based web app.
 
-When an app's access scopes change, it needs to request merchants to go through OAuth again to renew its permissions. The library provides an easy way for you to check whether that is the case at any point in your code:
+OAuth process by exchanging the [app's client ID and client secret](https://shopify.dev/docs/apps/build/authentication-authorization/client-secrets) for an [access token](https://shopify.dev/docs/apps/auth/access-token-types/online.md) to make
+authenticated Shopify API queries. The Developer Dashboard adds support for the client credentials grant in the [beta version](https://shopify.dev/beta/developer-dashboard/client-credentials-grant). The app can only use the client credentials grant if it belongs to the same Organization as the shop.
 
-```ts
-const session: Session; // Loaded from one of the methods above
+Access tokens retrieved using the client credentials grant are valid for only 24 hours.
 
-if (!shopify.config.scopes.equals(session.scope)) {
-  // Scopes have changed, the app should redirect the merchant to OAuth
-}
-```
+To perform [Client Credentials Grant](https://shopify.dev/beta/developer-dashboard/client-credentials-grant), in your app:
+1. Ensure your access scopes are available on Shopify:
+  - [configured through the Shopify CLI](https://shopify.dev/docs/apps/tools/cli/configuration)
+  - configured in the Developer Dashboard
 
-This is useful if you have a middleware or pre-request check in your app to ensure that the session is still valid.
+2. Start the token acquisition process by calling [shopify.auth.clientCredentials](../reference/auth/clientcredentials.md) to exchange app's client ID and client secret to access token.
+3. Use the obtained access token to make authenticated API queries, see [After OAuth](#after-oauth)
+
 
 ## After OAuth
 

@@ -15,9 +15,9 @@ beforeEach(() => {
 });
 
 describe('createSession', () => {
-  describe('when receiving an offline token', () => {
+  describe('when receiving an offline token with no expiry', () => {
     test.each([true, false])(
-      `creates a new offline session when embedded is %s`,
+      `creates a new offline session with no expiry when embedded is %s`,
       (isEmbeddedApp) => {
         const shopify = shopifyApi(testConfig({isEmbeddedApp}));
         const scopes = shopify.config.scopes
@@ -44,6 +44,44 @@ describe('createSession', () => {
             state: 'test-state',
             accessToken: accessTokenResponse.access_token,
             scope: accessTokenResponse.scope,
+          }),
+        );
+      },
+    );
+  });
+  describe('when receiving an offline token with expiry', () => {
+    test.each([true, false])(
+      `creates a new offline session with expiry when embedded is %s`,
+      (isEmbeddedApp) => {
+        const shopify = shopifyApi(testConfig({isEmbeddedApp}));
+        const scopes = shopify.config.scopes
+          ? shopify.config.scopes.toString()
+          : '';
+
+        const accessTokenResponse = {
+          access_token: 'some access token string',
+          scope: scopes,
+          expires_in: 525600,
+        };
+
+        const session = createSession({
+          config: shopify.config,
+          accessTokenResponse,
+          shop,
+          state: 'test-state',
+        });
+
+        expect(session).toEqual(
+          new Session({
+            id: `offline_${shop}`,
+            shop,
+            isOnline: false,
+            state: 'test-state',
+            accessToken: accessTokenResponse.access_token,
+            scope: accessTokenResponse.scope,
+            expires: new Date(
+              Date.now() + accessTokenResponse.expires_in * 1000,
+            ),
           }),
         );
       },
