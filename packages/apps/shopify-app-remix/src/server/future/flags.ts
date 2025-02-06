@@ -38,6 +38,16 @@ export interface FutureFlags {
    * @default false
    */
   removeRest?: boolean;
+
+  /**
+   * When enabled, introduces compatibility with Remix v3_singleFetch future flag.
+   *
+   * In the cases of billing redirects, and retrying request a request after an invalid session token
+   * the library will now throw a 302 redirect response instead of a 401 unauthorized response.
+   *
+   * @default false
+   */
+  remixSingleFetch?: boolean;
 }
 
 // When adding new flags, use this format:
@@ -74,6 +84,13 @@ export function logDisabledFutureFlags(
       'unstable_newEmbeddedAuthStrategy',
       'Enable this to use OAuth token exchange instead of auth code to generate API access tokens.' +
         '\n  Your app must be using Shopify managed install: https://shopify.dev/docs/apps/auth/installation',
+    );
+  }
+
+  if (!config.future.remixSingleFetch) {
+    logFlag(
+      'remixSingleFetch',
+      'Enable this to use Remix v3_singleFetch future flag.',
     );
   }
 }

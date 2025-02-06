@@ -7,7 +7,10 @@ import {BasicParams} from '../../../types';
 import {getSessionTokenHeader} from '../../helpers/get-session-token-header';
 
 import {renderAppBridge} from './render-app-bridge';
-import {redirectWithAppBridgeHeaders} from './redirect-with-app-bridge-headers';
+import {
+  redirectWithAppBridgeHeaders,
+  redirectWithResponseWithAppBridgeHeaders,
+} from './redirect-with-app-bridge-headers';
 
 export type RedirectTarget = '_self' | '_parent' | '_top' | '_blank';
 export type RedirectInit = number | (ResponseInit & {target?: RedirectTarget});
@@ -67,7 +70,11 @@ export function redirectFactory(
         return remixRedirect(parsedUrl.toString(), init);
       }
     } else if (isDataRequest(request)) {
-      throw redirectWithAppBridgeHeaders(parsedUrl.toString());
+      if (config.future.remixSingleFetch) {
+        throw redirectWithAppBridgeHeaders(parsedUrl.toString());
+      } else {
+        throw redirectWithResponseWithAppBridgeHeaders(parsedUrl.toString());
+      }
     } else if (isEmbeddedRequest(request)) {
       throw renderAppBridge(params, request, {
         url: parsedUrl.toString(),

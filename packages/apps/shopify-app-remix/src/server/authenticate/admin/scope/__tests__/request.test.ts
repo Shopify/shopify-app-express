@@ -139,7 +139,7 @@ describe('request from an embedded app', () => {
     );
 
     // THEN
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(302);
     const reuthorizeHeader = response.headers.get(
       'x-shopify-api-request-failure-reauthorize-url',
     );

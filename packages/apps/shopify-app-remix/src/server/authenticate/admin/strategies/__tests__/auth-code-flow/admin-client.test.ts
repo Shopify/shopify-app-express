@@ -113,7 +113,7 @@ describe('admin.authenticate context', () => {
         );
 
         // THEN
-        expect(response.status).toEqual(401);
+        expect(response.status).toEqual(302);
 
         const {origin, pathname, searchParams} = new URL(
           response.headers.get(REAUTH_URL_HEADER)!,
