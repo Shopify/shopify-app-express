@@ -45,7 +45,7 @@
     "jest-runner-eslint": "^2.2.1",
     "prettier": "^3.4.1",
     "rimraf": "^6.0.1",
-    "rollup": "^4.34.3",
+    "rollup": "^4.34.4",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.24",
     "supertest": "^7.0.0",
