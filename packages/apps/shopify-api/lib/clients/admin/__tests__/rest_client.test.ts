@@ -418,6 +418,33 @@ describe('REST client', () => {
     }).toMatchMadeHttpRequest();
   });
 
+  it('adapts to private app requests only if isCustomStoreApp', async () => {
+    const shopify = shopifyApi(
+      testConfig({
+        isCustomStoreApp: false,
+        adminApiAccessToken: 'test-admin-api-access-token',
+      }),
+    );
+
+    const client = new shopify.clients.Rest({session});
+
+    queueMockResponse(JSON.stringify(successResponse));
+
+    await expect(client.get({path: 'products'})).resolves.toEqual(
+      buildExpectedResponse(successResponse),
+    );
+
+    const customHeaders: Record<string, string> = {};
+    customHeaders[ShopifyHeader.AccessToken] = accessToken;
+
+    expect({
+      method: 'GET',
+      domain,
+      path: `/admin/api/${shopify.config.apiVersion}/products.json`,
+      headers: customHeaders,
+    }).toMatchMadeHttpRequest();
+  });
+
   it('fails to instantiate without access token', () => {
     const shopify = shopifyApi(testConfig());
 

@@ -2,7 +2,6 @@ import {ShopifyError} from './error';
 import {ConfigInterface, ConfigParams} from './base-types';
 import {LATEST_API_VERSION, LogSeverity} from './types';
 import {AuthScopes} from './auth/scopes';
-import {logger as createLogger} from './logger';
 
 export function validateConfig<Params extends ConfigParams>(
   params: Params,
@@ -97,15 +96,6 @@ export function validateConfig<Params extends ConfigParams>(
     billing: billing ?? config.billing,
     future: future ?? config.future,
   });
-
-  if (
-    config.isCustomStoreApp &&
-    params.adminApiAccessToken === params.apiSecretKey
-  ) {
-    createLogger(config).warning(
-      "adminApiAccessToken is set to the same value as apiSecretKey. adminApiAccessToken should be set to the Admin API access token for custom store apps; apiSecretKey should be set to the custom store app's API secret key.",
-    );
-  }
 
   return config;
 }

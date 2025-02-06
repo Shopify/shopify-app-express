@@ -122,19 +122,6 @@ describe('Config object', () => {
     }
   });
 
-  it(`logs warning if adminApiAccessToken same value as apiSecretKey`, () => {
-    validParams.isCustomStoreApp = true;
-    validParams.adminApiAccessToken = validParams.apiSecretKey;
-
-    const config = validateConfig(validParams);
-
-    expect(config.logger.log).toHaveBeenCalledWith(
-      LogSeverity.Warning,
-      expect.stringContaining('adminApiAccessToken is set'),
-    );
-    validParams.isCustomStoreApp = false;
-  });
-
   it('can partially override logger settings', () => {
     const configWithLogger = {...validParams};
     configWithLogger.logger = {
